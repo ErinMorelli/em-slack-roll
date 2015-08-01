@@ -1,0 +1,8 @@
+# Basic relevant text files
+include LICENSE README.md
+
+# Include template files
+recursive-include slack_roll/templates *
+
+# Exclude junk
+global-exclude .DS_Store
