@@ -22,9 +22,9 @@ Module: slack_roll
 
 import os
 import logging
+from flask import Flask
 from datetime import date
 from pkg_resources import get_provider
-from flask import Flask, redirect, render_template, request
 
 
 # =============================================================================
@@ -53,7 +53,7 @@ __module__ = "slack_roll.{0}".format(__file__)
 def set_project_info():
     ''' Set project information from setup tools installation
     '''
-    
+
     # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
     base_url = 'http://dev.erinmorelli.com/slack/roll'
 

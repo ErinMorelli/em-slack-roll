@@ -45,18 +45,20 @@ class RollParser(argparse.ArgumentParser):
         global ERRORS
         ERRORS.append(message)
 
-    def print_help(self, req_type):
+    def print_help(self):
         ''' Generates help and list messages
         '''
         global ERRORS
         global COMMAND
 
-        help_msg = "*{app_name}* can roll anywhere from *1-100 dice* with *4-100 sides* each.\n"
+        help_msg = "*{app_name}* can roll anywhere from "
+        help_msg += "*1-100 dice* with *4-100 sides* each.\n"
         help_msg += "Here are some examples:\n\n"
         help_msg += "`{command}`\n\tRolls a single 6-sided die\n\n"
         help_msg += "`{command} d20`\n\tRolls a single 20-sided die\n\n"
         help_msg += "`{command} 4d10`\n\tRolls 4 10-sided dice\n\n"
-        help_msg += "`{command} 1d6+3`\n\tRolls a single 6-sided die with a +3 modifier\n\n"
+        help_msg += "`{command} 1d6+3`\n\t"
+        help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
         help_msg += "`{command} help`\n\tShows this message\n"
 
         ERRORS.append(help_msg.format(
@@ -76,7 +78,7 @@ class RollAction(argparse.Action):
 
         # Check for help
         if dice_roll == 'help':
-            parser.print_help(dice_roll)
+            parser.print_help()
             return
 
         # Set defaults
@@ -90,7 +92,8 @@ class RollAction(argparse.Action):
 
         # Check that roll is valid
         if result is None:
-            parser.error("'{0}' is not a recognized roll format".format(dice_roll))
+            parser.error(
+                "'{0}' is not a recognized roll format".format(dice_roll))
 
         # Get the number of dice
         if result.group(1) is not None:

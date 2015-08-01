@@ -22,8 +22,6 @@ Module: slack_tableflip.auth
 '''
 
 from flask import abort
-from urllib import urlencode
-from datetime import timedelta
 from slacker import Auth, Error
 from slack_roll import PROJECT_INFO
 from slack_roll.storage import Users, DB
@@ -38,7 +36,10 @@ def validate_token(token):
     auth = Auth(token)
 
     # Make request
-    result = auth.test()
+    try:
+        result = auth.test()
+    except Error:
+        abort(400)
 
     # Check for errors
     if not result.successful:
@@ -74,7 +75,7 @@ def confirm_token(args):
         abort(409)
 
     # Set success url
-    redirect_url = '{0}?success=1'.format(sr.PROJECT_INFO['base_url'])
+    redirect_url = '{0}?success=1'.format(PROJECT_INFO['base_url'])
 
     # Return successful
     return redirect_url
