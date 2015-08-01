@@ -1,7 +1,7 @@
-# [EM Slack Tableflip](http://dev.erinmorelli.com/slack/flip)
-Flip some tables on [Slack](https://slack.com).
+# [EM Slack Roll](http://dev.erinmorelli.com/slack/roll)
+Roll some dice on [Slack](https://slack.com).
 
-Built using emojis from [here](http://www.emoticonfun.org/flip/) and [here](http://emojicons.com/table-flipping).
+EM Slack Roll needs to be authorized to post to your team. Get authorized [here](http://dev.erinmorelli.com/slack/roll/authorize).
 
 ----------
 ## Setup
@@ -12,127 +12,57 @@ Built using emojis from [here](http://www.emoticonfun.org/flip/) and [here](http
 
 2. Use one of the following options as your new command:
 
-        /flip
-        /fliptable
-        /tableflip
-        /flip_table
-        /table_flip
+        /roll
+        /rolldice
+        /diceroll
+        /roll_dice
+        /dice_roll
 
     **Note:** Table flipping will not work without one of these specific slash commands.
 
 3. Set the **URL** field to:
 
-        http://dev.erinmorelli.com/slack/flip/table
+        http://dev.erinmorelli.com/slack/roll/
+
+    **Note:** The trailing slash matters!
 
 4. Set the **Method** option to `POST`
 
 5. Some optional, but useful extra steps:
     1. Check the box next to **Show this command in the autocomplete list**.
-    2. Set the **Description** field to `"Flip some tables"`.
-    3. Set the **Usage** hint field to `"[type] (or 'help', 'list')"`.
-    4. Set the **Descriptive Label** field to `"EM Slack Tableflip"`.
+    2. Set the **Description** field to `"Roll some dice"`.
+    3. Set the **Usage** hint field to `"[roll] (or 'help')"`.
+    4. Set the **Descriptive Label** field to `"EM Slack Roll"`.
 
 6. And finally, click the **Save Integration** button. Check out the [usage](#usage) section to get started flipping!
 
 ----------
 ## Usage
 
-**Note:** These examples use `/flip` as the slash command, but yours may vary based on what you selected for step 2 during the [setup](#setup) process.
+**Note:** These examples use `/roll` as the slash command, but yours may vary based on what you selected for step 2 during the [setup](#setup) process.
 
-Use command `/flip help` to view this usage information from within Slack.
+Use command `/roll help` to view this usage information from within Slack.
 
-**Basic Flip:**
+**Basic roll:**
 
-    /flip
+    /roll
 
-**Word Flips:**
+Rolls a single 6-sided die.
 
-    /flip word [word]
+**Specify number of sides:**
 
-**Tip:** You can enter one or multiple words, e.g. `/flip` word hello world produces: `(╯°□°)╯︵ plɹoM ollǝH`
+    /roll d20
 
-**Special Flips:**
+Rolls a single 20-sided die.
 
-    /flip [type]
+**Specify dice count:**
 
-Available flip types:
+    /roll 4d10
 
-    /flip
-        (╯°□°)╯︵ ┻━┻
+Rolls a 4 10-sided dice.
 
-    /flip battle
-        (╯°□°)╯︵ ┻━┻ ︵ ╯(°□° ╯)
+**Specify a modifier:**
 
-    /flip bear
-        ʕノ•ᴥ•ʔノ ︵ ┻━┻
+    /roll 1d6+3
 
-    /flip cry
-        (╯'□')╯︵ ┻━┻
-
-    /flip cute
-        ┻━┻ ︵ ლ(⌒-⌒ლ)
-
-    /flip force
-        (._.) ~ ︵ ┻━┻
-
-    /flip freakout
-        (ﾉಥДಥ)ﾉ︵┻━┻･/
-
-    /flip jake
-        (┛❍ᴥ❍﻿)┛彡┻━┻
-
-    /flip laptop
-        (ノÒ益Ó)ノ彡▔▔▏
-
-    /flip magic
-        (/¯◡ ‿ ◡)/¯ ~ ┻━┻
-
-    /flip monocle
-        (╯ಠ_ರೃ)╯︵ ┻━┻
-
-    /flip opposite
-        ノ┬─┬ノ ︵ ( \o°o)\
-
-    /flip owl
-        (ʘ∇ʘ)ク 彡 ┻━┻
-
-    /flip people
-        (/ .□.)\ ︵╰(゜Д゜)╯︵ /(.□. \)
-
-    /flip person
-        (╯°□°）╯︵ /(.□. \)
-
-    /flip pudgy
-        (ノ ゜Д゜)ノ ︵ ┻━┻
-
-    /flip rage
-        (ﾉಥ益ಥ）ﾉ﻿ ┻━┻
-
-    /flip relax
-        ┬─┬ノ( º _ ºノ)
-
-    /flip return
-        (ノ^_^)ノ┻━┻ ┬─┬ ノ( ^_^ノ)
-
-    /flip robot
-        ┗[© ♒ ©]┛ ︵ ┻━┻
-
-    /flip shrug
-        ┻━┻ ︵﻿ ¯\(ツ)/¯ ︵ ┻━┻
-
-    /flip strong
-        /(ò.ó)┛彡┻━┻
-
-    /flip teeth
-        (ノಠ益ಠ)ノ彡┻━┻
-
-    /flip two
-        ┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻
-
-    /flip whoops
-        ┬──┬﻿ ¯\_(ツ)
-
-    /flip yelling
-        (┛◉Д◉)┛彡┻━┻
-
-Use command `/flip list` to view this list from within Slack.
+Rolls a single 6-sided die with a +3 modifier.

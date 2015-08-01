@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="chrome=1">
-        <title>{{ project.name_full }}</title>
+        <title>Authorize | {{ project.name_full }}</title>
 
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/pygment_trac.css') }}">
@@ -17,27 +17,27 @@
             <div class="alert">
                 <p>
                     <span class="close">&times;</span>
-                    <strong>Success!</strong> You are ready to start flipping tables!
+                    <strong>Success!</strong> You are ready to start rolling dice!
                 </p>
             </div>
         {% endif %}
         <div class="wrapper">
             <header>
                 <h1>{{ project.name_full }}</h1>
-                <p>Flip some tables on <a href="https://slack.com/">Slack</a>.</p>
-                <p class="view"><a href="http://github.com/ErinMorelli/em-slack-tableflip">View the Project on GitHub <small>ErinMorelli/em-slack-tableflip</small></a></p>
+                <p>Roll some dice on <a href="https://slack.com/">Slack</a>.</p>
+                <p class="view"><a href="http://github.com/ErinMorelli/em-slack-roll">View the Project on GitHub <small>ErinMorelli/em-slack-roll</small></a></p>
                 <ul>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-tableflip/zipball/master">Download <strong>ZIP File</strong></a></li>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-tableflip/tarball/master">Download <strong>TAR Ball</strong></a></li>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-tableflip">Fork On <strong>GitHub</strong></a></li>
+                    <li><a href="https://github.com/ErinMorelli/em-slack-roll/zipball/master">Download <strong>ZIP File</strong></a></li>
+                    <li><a href="https://github.com/ErinMorelli/em-slack-roll/tarball/master">Download <strong>TAR Ball</strong></a></li>
+                    <li><a href="https://github.com/ErinMorelli/em-slack-roll">Fork On <strong>GitHub</strong></a></li>
                 </ul>
             </header>
             <section>
-                <h1>Let’s Flip Some Tables!</h1>
+                <h1>Let’s Roll Some Dice!</h1>
 
-                <p>Built using emojis from <a href="http://www.emoticonfun.org/flip/" target="_blank">here</a> and <a href="http://emojicons.com/table-flipping" target="_blank">here</a>.
+                <p>EM Slack Roll needs to be authorized to post to your team. Get authorized <a href="{{ url_for('authorize') }}">here</a>.
 
-                <hr>
+                <hr />
 
                 <h2 id="setup">Setup</h2>
 
@@ -54,12 +54,15 @@
                             {%- endfor %}
                         </ul>
                         <p>
-                            <small><strong>Note:</strong> Table flipping will not work without one of these specific slash commands.</small>
+                            <small><strong>Note:</strong> Dice rolling will not work without one of these specific slash commands.</small>
                         </p>
                     </li>
                     <li>
                         <p>Set the <strong>URL</strong> field to:</p>
-                        <pre><code>http://dev.erinmorelli.com/slack/flip/table</code></pre>
+                        <pre><code>http://dev.erinmorelli.com/slack/roll/</code></pre>
+                        <p>
+                            <small><strong>Note:</strong> The trailing slash matters!</small>
+                        </p>
                     </li>
                     <li>
                         <p>Set the <strong>Method</strong> option to <code>POST</code></p>
@@ -68,13 +71,13 @@
                         Some optional, but useful extra steps:<br />
                         <ul>
                             <li>Check the box next to <strong>Show this command in the autocomplete list</strong>.</li>
-                            <li>Set the <strong>Description</strong> field to <code>"Flip some tables"</code>.</li>
-                            <li>Set the <strong>Usage hint</strong> field to <code>"[type] (or 'help', 'list')"</code>.</li>
+                            <li>Set the <strong>Description</strong> field to <code>"Roll some dice"</code>.</li>
+                            <li>Set the <strong>Usage hint</strong> field to <code>"[roll] (or 'help')"</code>.</li>
                             <li>Set the <strong>Descriptive Label</strong> field to <code>"{{ project.name_full }}"</code>.</li>
                         </ul>
                     </li>
                     <li>
-                        And finally, click the <strong>Save Integration</strong> button. Check out the <a href="#usage">usage</a> section to get started flipping!
+                        And finally, click the <strong>Save Integration</strong> button. Check out the <a href="#usage">usage</a> section to get started rolling!
                     </li>
                 </ol>
 
@@ -82,42 +85,33 @@
 
                 <h2 id="usage">Usage</h2>
 
-                <p><strong>Note:</strong> These examples use <code>/flip</code> as the slash command, but yours may vary based on what you selected for step 2 during the <a href="setup">setup</a> process.</p>
+                <p><strong>Note:</strong> These examples use <code>/roll</code> as the slash command, but yours may vary based on what you selected for step 2 during the <a href="setup">setup</a> process.</p>
 
-                <p>Use command <code>/flip help</code> to view this usage information from within Slack.</p>
+                <p>Use command <code>/roll help</code> to view this usage information from within Slack.</p>
 
-                <p><strong>Basic Flip:</strong></p>
+                <p><strong>Basic roll:</strong></p>
 
-                <pre><code>/flip</code></pre>
+                <pre><code>/roll</code></pre>
 
-                <p><strong>Word Flips:</strong></p>
+                <p>Rolls a single 6-sided die.</p>
 
-                <pre><code>/flip word [word]</code></pre>
+                <p><strong>Specify number of sides:</strong></p>
 
-                <p><strong>Tip:</strong> You can enter one or multiple words, e.g. <code>/flip word hello world</code> produces: <code>(╯°□°)╯︵ plɹoM ollǝH</code></p>
+                <pre><code>/roll d20</code></pre>
 
-                <p><strong>Special Flips:</strong></p>
+                <p>Rolls a single 20-sided die.</p>
 
-                <pre><code>/flip [type]</code></pre>
+                <p><strong>Specify dice count:</strong></p>
 
-                <p>Available flip types:</p>
+                <pre><code>/roll 4d10</code></pre>
 
-                <table>
-                    <tr>
-                        <td><code>/flip</code></td>
-                        <td><code>{{ allowed_types['classic'].decode('utf-8') }}</code></td>
-                    </tr>
-                    {% for (allowed_type, description) in allowed_types|dictsort(true) -%}
-                        {% if allowed_type != 'classic' -%}
-                            <tr>
-                                <td><code>/flip {{ allowed_type }}</code></td>
-                                <td><code>{{ description.decode('utf-8') }}</code></td>
-                            </tr>
-                        {%- endif %}
-                    {%- endfor %}
-                </table>
+                <p>Rolls a 4 10-sided dice.</p>
 
-                <p>Use command <code>/flip list</code> to view this list from within Slack.
+                 <p><strong>Specify a modifier:</strong></p>
+
+                <pre><code>/roll 1d6+3</code></pre>
+
+                <p>Rolls a single 6-sided die with a +3 modifier.</p>
 
             </section>
             <footer>

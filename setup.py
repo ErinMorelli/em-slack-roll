@@ -43,7 +43,7 @@ setup(
     version='0.1a1',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
-    url='http://www.erinmorelli.com/projects/em-slack-roll',
+    url='http://dev.erinmorelli.com/slack/roll',
     license='MIT',
     platforms='Linux, OSX',
     description='Roll some dice on Slack.',
@@ -61,6 +61,8 @@ setup(
     install_requires=[
         'Flask',
         'pkginfo',
-        'slacker'
+        'slacker',
+        'Flask-SQLAlchemy',
+        'MySQL-Python'
     ]
 )

@@ -23,7 +23,6 @@ Module: slack_roll
 import os
 import logging
 from datetime import date
-import slack_tableflip.roll as roll
 from pkg_resources import get_provider
 from flask import Flask, redirect, render_template, request
 
@@ -41,8 +40,6 @@ logging.basicConfig(
     level=30,
 )
 
-logging.log(30, "Started app logging")
-
 
 # =============================================================================
 #  App Constants
@@ -57,9 +54,6 @@ def set_project_info():
     ''' Set project information from setup tools installation
     '''
 
-    # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
-    base_url = 'http://dev.erinmorelli.com/slack/roll'
-
     # Get app info from the dist
     app_name = 'slack_roll'
     provider = get_provider(app_name)
@@ -70,8 +64,7 @@ def set_project_info():
         'author_url': 'http://www.erinmorelli.com',
         'version_int': 0.101,
         'package_path': provider.module_path,
-        'copyright': str(date.today().year),
-        'base_url': base_url
+        'copyright': str(date.today().year)
     }
 
 # Project info
@@ -89,9 +82,6 @@ ALLOWED_COMMANDS = [
     '/dice_roll'
 ]
 
-# Set Slack API token
-WEBHOOK_URL = os.environ['EMSR_WEBHOOK_URL']
-
 
 # =============================================================================
 # Flask App Configuration
@@ -107,29 +97,6 @@ APP = Flask(
 # Set up flask config
 # SET THESE ENV VALUES FOR YOUR OWN INSTALLATION
 APP.config.update({
+    'SQLALCHEMY_DATABASE_URI': os.environ['EMSR_DATABASE_URI'],
     'SECRET_KEY': os.environ['EMSR_SECRET_KEY']
 })
-
-
-# =============================================================================
-# Flask Views
-# =============================================================================
-
-@APP.route('/', methods=['GET', 'POST'])
-def table():
-    ''' Return a dice roll from a Slack POST call
-    '''
-
-    if request.method == 'POST':
-        return roll.make_roll(request.form)
-
-    else:
-        return render_template(
-            'index.html',
-            project=PROJECT_INFO,
-            allowed_commands=ALLOWED_COMMANDS
-        )
-
-# Run the Flask app
-if __name__ == '__main__':
-    APP.run()
