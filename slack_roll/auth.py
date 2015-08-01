@@ -21,10 +21,10 @@ Module: slack_tableflip.auth
     - Stores authorized token data
 '''
 
+from flask import abort
 from urllib import urlencode
 from datetime import timedelta
 from slacker import Auth, Error
-from flask import abort, url_for
 from slack_roll import PROJECT_INFO
 from slack_roll.storage import Users, DB
 from sqlalchemy.exc import IntegrityError as IntegrityError
@@ -73,5 +73,8 @@ def confirm_token(args):
         # User already exists
         abort(409)
 
+    # Set success url
+    redirect_url = '{0}?success=1'.format(sr.PROJECT_INFO['base_url'])
+
     # Return successful
-    return url_for('home', success=1)
+    return redirect_url

@@ -26,7 +26,6 @@ import re
 import random
 import argparse
 import slack_roll as sr
-from flask import url_for
 from slacker import Chat, Error
 from slack_roll.storage import Users
 
@@ -157,7 +156,7 @@ def check_token(args):
     auth_msg = "{0} is not authorized to post in this team: {1}"
     auth_error = auth_msg.format(
         sr.PROJECT_INFO['name_full'],
-        '*<{0}|Click here to authorize>*'.format(url_for('authorize'))
+        '*<{0}|Click here to authorize>*'.format(sr.PROJECT_INFO['auth_url'])
     )
 
     # Look for team in DB

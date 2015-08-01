@@ -53,6 +53,9 @@ __module__ = "slack_roll.{0}".format(__file__)
 def set_project_info():
     ''' Set project information from setup tools installation
     '''
+    
+    # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
+    base_url = 'http://dev.erinmorelli.com/slack/roll'
 
     # Get app info from the dist
     app_name = 'slack_roll'
@@ -64,7 +67,10 @@ def set_project_info():
         'author_url': 'http://www.erinmorelli.com',
         'version_int': 0.101,
         'package_path': provider.module_path,
-        'copyright': str(date.today().year)
+        'copyright': str(date.today().year),
+        'base_url': base_url,
+        'auth_url': '{0}/authorize'.format(base_url),
+        'confirm_url': '{0}/confirm'.format(base_url)
     }
 
 # Project info

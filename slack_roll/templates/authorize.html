@@ -29,7 +29,7 @@
 
                 <p>{{ project.name_full }} needs a Slack API Token with posting privileges to work:</p>
 
-                <form action="{{ url_for('confirm') }}" method="GET">
+                <form action="{{ project.confirm_url }}" method="GET">
 
                     <p><input type="text" name="token" placeholder="Slack API Token" /></p>
 
