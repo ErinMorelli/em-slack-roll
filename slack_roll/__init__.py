@@ -65,6 +65,7 @@ def set_project_info():
         'name': app_name,
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
+        'version': '0.1b1',
         'version_int': 0.101,
         'package_path': provider.module_path,
         'copyright': str(date.today().year),
