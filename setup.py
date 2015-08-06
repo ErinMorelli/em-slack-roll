@@ -40,7 +40,7 @@ def gen_data_files(*dirs):
 # Set up mediahandler package
 setup(
     name='em-slack-roll',
-    version='0.1a1',
+    version='0.1b2',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
     url='http://dev.erinmorelli.com/slack/roll',

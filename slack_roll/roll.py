@@ -45,26 +45,33 @@ class RollParser(argparse.ArgumentParser):
         global ERRORS
         ERRORS.append(message)
 
-    def print_help(self):
+    def print_help(self, dice_roll):
         ''' Generates help and list messages
         '''
         global ERRORS
         global COMMAND
 
-        help_msg = "*{app_name}* can roll anywhere from "
-        help_msg += "*1-100 dice* with *4-100 sides* each.\n"
-        help_msg += "Here are some examples:\n\n"
-        help_msg += "`{command}`\n\tRolls a single 6-sided die\n\n"
-        help_msg += "`{command} d20`\n\tRolls a single 20-sided die\n\n"
-        help_msg += "`{command} 4d10`\n\tRolls 4 10-sided dice\n\n"
-        help_msg += "`{command} 1d6+3`\n\t"
-        help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
-        help_msg += "`{command} help`\n\tShows this message\n"
+        if dice_roll == 'help':
+            help_msg = "*{app_name}* can roll anywhere from "
+            help_msg += "*1-100 dice* with *4-100 sides* each.\n"
+            help_msg += "Here are some examples:\n\n"
+            help_msg += "`{command}`\n\tRolls a single 6-sided die\n\n"
+            help_msg += "`{command} d20`\n\tRolls a single 20-sided die\n\n"
+            help_msg += "`{command} 4d10`\n\tRolls 4 10-sided dice\n\n"
+            help_msg += "`{command} 1d6+3`\n\t"
+            help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
+            help_msg += "`{command} help`\n\tShows this message\n"
 
-        ERRORS.append(help_msg.format(
-            app_name=sr.PROJECT_INFO['name_full'],
-            command=COMMAND
-        ))
+            ERRORS.append(help_msg.format(
+                app_name=sr.PROJECT_INFO['name_full'],
+                command=COMMAND
+            ))
+
+        elif dice_roll == 'version':
+            ERRORS.append('{app_name} v{version}'.format(
+                app_name=sr.PROJECT_INFO['name_full'],
+                version=sr.PROJECT_INFO['version']
+            ))
 
 
 class RollAction(argparse.Action):
@@ -77,8 +84,8 @@ class RollAction(argparse.Action):
         dice_roll = values.lower()
 
         # Check for help
-        if dice_roll == 'help':
-            parser.print_help()
+        if dice_roll in ['help', 'version']:
+            parser.print_help(dice_roll)
             return
 
         # Set defaults
@@ -93,40 +100,48 @@ class RollAction(argparse.Action):
         # Check that roll is valid
         if result is None:
             parser.error(
-                "'{0}' is not a recognized roll format".format(dice_roll))
+                "'{0}' is not a recognized roll format".format(
+                    dice_roll.encode('utf-8')
+                )
+            )
 
-        # Get the number of dice
-        if result.group(1) is not None:
-            count = int(result.group(1))
+        else:
+            # Get the number of dice
+            if result.group(1) is not None:
+                count = int(result.group(1))
 
-            # Set 100 count max
-            if count > 100:
-                count = 100
+                # Set 100 count max
+                if count > 100:
+                    count = 100
 
-            # Set 1 count min
-            if count < 1:
-                count = 1
+                # Set 1 count min
+                if count < 1:
+                    count = 1
 
-        # Get the number of sides
-        if result.group(2) is not None:
-            sides = int(result.group(2))
+            # Get the number of sides
+            if result.group(2) is not None:
+                sides = int(result.group(2))
 
-            # Set 100 side max
-            if sides > 100:
-                sides = 100
+                # Set 100 side max
+                if sides > 100:
+                    sides = 100
 
-            # Set 4 side min
-            if sides < 4:
-                sides = 4
+                # Set 4 side min
+                if sides < 4:
+                    sides = 4
 
-        # Get the modifiers
-        if result.group(3) is not None:
+            # Get the modifiers
+            if result.group(3) is not None:
 
-            if result.group(4) is None:
-                return "ERROR"
+                if result.group(4) is None:
+                    parser.error(
+                        "'{0}' is not a recognized roll format".format(
+                            dice_roll.encode('utf-8')
+                        )
+                    )
 
-            modifier = result.group(3)
-            modifier_count = int(result.group(4))
+                modifier = result.group(3)
+                modifier_count = int(result.group(4))
 
         # Set values
         setattr(namespace, 'count', count)
