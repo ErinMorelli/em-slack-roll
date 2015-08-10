@@ -54,8 +54,3 @@ def confirm():
     ''' Confirm the API token provided for authorization
     '''
     return redirect(auth.confirm_token(request.args))
-
-
-# Run the Flask app
-if __name__ == '__main__':
-    APP.run()
