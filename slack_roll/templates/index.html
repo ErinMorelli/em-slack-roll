@@ -53,13 +53,10 @@
                                 <li><code>{{ allowed_command }}</code></li>
                             {%- endfor %}
                         </ul>
-                        <p>
-                            <small><strong>Note:</strong> Dice rolling will not work without one of these specific slash commands.</small>
-                        </p>
                     </li>
                     <li>
                         <p>Set the <strong>URL</strong> field to:</p>
-                        <pre><code>http://dev.erinmorelli.com/slack/roll/</code></pre>
+                        <pre><code>{{ project.base_url }}</code></pre>
                         <p>
                             <small><strong>Note:</strong> The trailing slash matters!</small>
                         </p>

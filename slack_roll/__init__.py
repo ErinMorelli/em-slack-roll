@@ -21,24 +21,9 @@ Module: slack_roll
 '''
 
 import os
-import logging
 from flask import Flask
 from datetime import date
 from pkg_resources import get_provider
-
-
-# =============================================================================
-# App Logging
-# =============================================================================
-
-__logfile__ = os.path.join(os.path.expanduser("~"), 'logs', 'roll.log')
-
-# Config logging
-logging.basicConfig(
-    filename=__logfile__,
-    format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s',
-    level=30,
-)
 
 
 # =============================================================================
@@ -55,7 +40,7 @@ def set_project_info():
     '''
 
     # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
-    base_url = 'http://dev.erinmorelli.com/slack/roll'
+    base_url = 'http://slack-roll.herokuapp.com'
 
     # Get app info from the dist
     app_name = 'slack_roll'

@@ -22,9 +22,7 @@ EM Slack Roll needs to be authorized to post to your team. Get authorized [here]
 
 3. Set the **URL** field to:
 
-        http://dev.erinmorelli.com/slack/roll/
-
-    **Note:** The trailing slash matters!
+        http://slack-roll.herokuapp.com
 
 4. Set the **Method** option to `POST`
 
