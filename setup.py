@@ -63,6 +63,6 @@ setup(
         'pkginfo',
         'slacker',
         'Flask-SQLAlchemy',
-        'MySQL-Python'
+        'psycopg2'
     ]
 )
