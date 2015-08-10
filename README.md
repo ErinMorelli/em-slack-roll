@@ -1,7 +1,7 @@
-# [EM Slack Roll](http://dev.erinmorelli.com/slack/roll)
+# [EM Slack Roll](http://slack-roll.herokuapp.com)
 Roll some dice on [Slack](https://slack.com).
 
-EM Slack Roll needs to be authorized to post to your team. Get authorized [here](http://dev.erinmorelli.com/slack/roll/authorize).
+EM Slack Roll needs to be authorized to post to your team. Get authorized [here](http://slack-roll.herokuapp.com/authorize).
 
 ----------
 ## Setup
