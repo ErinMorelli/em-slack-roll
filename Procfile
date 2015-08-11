@@ -1,1 +1,1 @@
-web: python roll.py
+web: python diceroll.py
