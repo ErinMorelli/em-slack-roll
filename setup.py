@@ -43,7 +43,7 @@ setup(
     version='0.1b2',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
-    url='http://dev.erinmorelli.com/slack/roll',
+    url='http://slack-roll.herokuapp.com',
     license='MIT',
     platforms='Linux, OSX',
     description='Roll some dice on Slack.',
@@ -60,9 +60,9 @@ setup(
 
     install_requires=[
         'Flask',
-        'pkginfo',
-        'slacker',
         'Flask-SQLAlchemy',
-        'psycopg2'
+        'pkginfo',
+        'psycopg2',
+        'slacker'
     ]
 )
