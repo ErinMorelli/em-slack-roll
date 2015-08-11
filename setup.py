@@ -61,6 +61,7 @@ setup(
     install_requires=[
         'Flask',
         'Flask-SQLAlchemy',
+        'newrelic',
         'pkginfo',
         'psycopg2',
         'slacker'
