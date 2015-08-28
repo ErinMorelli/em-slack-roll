@@ -50,8 +50,8 @@ def set_project_info():
         'name': app_name,
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
-        'version': '0.1b2',
-        'version_int': 0.112,
+        'version': '0.1b3',
+        'version_int': 0.113,
         'package_path': provider.module_path,
         'copyright': str(date.today().year),
         'base_url': base_url,
@@ -89,6 +89,6 @@ APP = Flask(
 # Set up flask config
 # SET THESE ENV VALUES FOR YOUR OWN INSTALLATION
 APP.config.update({
-    'SQLALCHEMY_DATABASE_URI': os.environ['EMSR_DATABASE_URI'],
-    'SECRET_KEY': os.environ['EMSR_SECRET_KEY']
+    'SQLALCHEMY_DATABASE_URI': os.environ['DATABASE_URL'],
+    'SECRET_KEY': os.environ['SECURE_KEY']
 })
