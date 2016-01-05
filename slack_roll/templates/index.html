@@ -25,58 +25,19 @@
             <header>
                 <h1>{{ project.name_full }} <small>{{ project.version }}</small></h1>
                 <p>Roll some dice on <a href="https://slack.com/">Slack</a>.</p>
-                <p class="view"><a href="http://github.com/ErinMorelli/em-slack-roll">View the Project on GitHub <small>ErinMorelli/em-slack-roll</small></a></p>
+                <p class="view"><a href="{{ project.github_url }}">View the Project on GitHub <small>ErinMorelli/em-slack-roll</small></a></p>
                 <ul>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-roll/zipball/master">Download <strong>ZIP File</strong></a></li>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-roll/tarball/master">Download <strong>TAR Ball</strong></a></li>
-                    <li><a href="https://github.com/ErinMorelli/em-slack-roll">Fork On <strong>GitHub</strong></a></li>
+                    <li><a href="{{ project.github_url }}/zipball/master">Download <strong>ZIP File</strong></a></li>
+                    <li><a href="{{ project.github_url }}/tarball/master">Download <strong>TAR Ball</strong></a></li>
+                    <li><a href="{{ project.github_url }}">Fork On <strong>GitHub</strong></a></li>
                 </ul>
             </header>
             <section>
                 <h1>Let’s Roll Some Dice!</h1>
 
-                <p>EM Slack Roll needs to be authorized to post to your team. Get authorized <a href="{{ url_for('authorize') }}">here</a>.
+                <p>Use this button to add the <code>/roll</code> slash command to your team:</p>
 
-                <hr />
-
-                <h2 id="setup">Setup</h2>
-
-                <ol>
-                    <li>
-                        <p>Add a new <strong>Slash Command</strong> by going to:</p>
-                        <pre><code>https://{your-team}.slack.com/services/new/slash-commands</code></pre>
-                    </li>
-                    <li>
-                        Use one of the following options as your new command:
-                        <ul>
-                            {% for allowed_command in allowed_commands -%}
-                                <li><code>{{ allowed_command }}</code></li>
-                            {%- endfor %}
-                        </ul>
-                        <p>
-                            <small><strong>Note:</strong> Dice rolling will not work without one of these specific slash commands.</small>
-                        </p>
-                    </li>
-                    <li>
-                        <p>Set the <strong>URL</strong> field to:</p>
-                        <pre><code>{{ project.base_url }}</code></pre>
-                    </li>
-                    <li>
-                        <p>Set the <strong>Method</strong> option to <code>POST</code></p>
-                    </li>
-                    <li>
-                        Some optional, but useful extra steps:<br />
-                        <ul>
-                            <li>Check the box next to <strong>Show this command in the autocomplete list</strong>.</li>
-                            <li>Set the <strong>Description</strong> field to <code>"Roll some dice"</code>.</li>
-                            <li>Set the <strong>Usage hint</strong> field to <code>"[roll] (or 'help')"</code>.</li>
-                            <li>Set the <strong>Descriptive Label</strong> field to <code>"{{ project.name_full }}"</code>.</li>
-                        </ul>
-                    </li>
-                    <li>
-                        And finally, click the <strong>Save Integration</strong> button. Check out the <a href="#usage">usage</a> section to get started rolling!
-                    </li>
-                </ol>
+                <p><a href="{{ url_for('authenticate') }}"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a></p>
 
                 <hr>
 

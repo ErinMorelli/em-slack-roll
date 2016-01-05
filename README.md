@@ -1,43 +1,12 @@
-# [EM Slack Roll](http://slack-roll.herokuapp.com)
+# [EM Slack Roll](https://slack-roll.herokuapp.com)
 Roll some dice on [Slack](https://slack.com).
 
-EM Slack Roll needs to be authorized to post to your team. Get authorized [here](http://slack-roll.herokuapp.com/authorize).
-
-----------
-## Setup
-
-1. Add a new **Slash Command** by going to:
-
-        https://{your-team}.slack.com/services/new/slash-commands
-
-2. Use one of the following options as your new command:
-
-        /roll
-        /rolldice
-        /diceroll
-        /roll_dice
-        /dice_roll
-
-    **Note:** Table flipping will not work without one of these specific slash commands.
-
-3. Set the **URL** field to:
-
-        http://slack-roll.herokuapp.com
-
-4. Set the **Method** option to `POST`
-
-5. Some optional, but useful extra steps:
-    1. Check the box next to **Show this command in the autocomplete list**.
-    2. Set the **Description** field to `"Roll some dice"`.
-    3. Set the **Usage** hint field to `"[roll] (or 'help')"`.
-    4. Set the **Descriptive Label** field to `"EM Slack Roll"`.
-
-6. And finally, click the **Save Integration** button. Check out the [usage](#usage) section to get started flipping!
+[Click here](http://slack-roll.herokuapp.com) to setup EM Slack Roll for your team.
 
 ----------
 ## Usage
 
-**Note:** These examples use `/roll` as the slash command, but yours may vary based on what you selected for step 2 during the [setup](#setup) process.
+**Note:** These examples use `/roll` as the slash command, but yours may vary based on what you selected for step 2 during the manual setup process.
 
 Use command `/roll help` to view this usage information from within Slack.
 

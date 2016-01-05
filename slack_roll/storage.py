@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -30,21 +30,23 @@ from flask.ext.sqlalchemy import SQLAlchemy
 DB = SQLAlchemy(APP)
 
 
-class Users(DB.Model):
+class Teams(DB.Model):
     ''' Table for storing api tokens
     '''
-    __tablename__ = 'roll_users'
+    __tablename__ = 'roll_teams'
 
-    team = DB.Column(DB.String(16), primary_key=True)
+    id = DB.Column(DB.String(16), primary_key=True)
     token = DB.Column(DB.String(60))
+    bot_id = DB.Column(DB.String(16))
+    bot_token = DB.Column(DB.String(60))
     added = DB.Column(DB.DateTime)
 
     def __init__(self, team_id):
-        self.team = team_id
+        self.id = team_id
         self.added = datetime.now()
 
     def __repr__(self):
-        return '<User {0}>'.format(self.id)
+        return '<Team {0}>'.format(self.id)
 
 
 try:

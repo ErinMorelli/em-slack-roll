@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,5 +27,5 @@ if __name__ == '__main__':
     newrelic.agent.initialize()
 
     # Start Flask app
-    port = int(environ.get("PORT", 5000))
-    APP.run(host='0.0.0.0', port=port)
+    PORT = int(environ.get("PORT", 5000))
+    APP.run(host='0.0.0.0', port=PORT)

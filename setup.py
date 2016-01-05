@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -40,7 +40,7 @@ def gen_data_files(*dirs):
 # Set up mediahandler package
 setup(
     name='em-slack-roll',
-    version='0.1b3',
+    version='0.2',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
     url='http://slack-roll.herokuapp.com',

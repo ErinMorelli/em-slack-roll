@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -26,13 +26,20 @@ import re
 import random
 import argparse
 import slack_roll as sr
-from slacker import Chat, Error
-from slack_roll.storage import Users
+from slack_roll.storage import Teams
+from slacker import Auth, Chat, Error
 
 
 # Set globals
 ERRORS = []
 COMMAND = None
+
+# Set not authenticated error message
+AUTH_MSG = "{0} is not authorized to post in this team: {1}"
+AUTH_ERROR = AUTH_MSG.format(
+    sr.PROJECT_INFO['name_full'],
+    '*<{0}|Click here to authorize>*'.format(sr.PROJECT_INFO['base_url'])
+)
 
 
 class RollParser(argparse.ArgumentParser):
@@ -165,27 +172,39 @@ def get_parser():
     return parser
 
 
-def check_token(args):
+def get_team(args):
     ''' Checks that the team is authenticated with the app
         Returns authenticated team token data
     '''
 
-    # Set not authenticated error message
-    auth_msg = "{0} is not authorized to post in this team: {1}"
-    auth_error = auth_msg.format(
-        sr.PROJECT_INFO['name_full'],
-        '*<{0}|Click here to authorize>*'.format(sr.PROJECT_INFO['auth_url'])
-    )
-
     # Look for team in DB
-    team = Users.query.get(args['team_id'])
-
-    # Validate team
-    if not team:
-        return False, auth_error
+    team = Teams.query.get(args['team_id'])
 
     # Return token
-    return True, team.token
+    return team
+
+
+def is_valid_token(token):
+    ''' Checks that the team has a valid token
+    '''
+
+    # Set auth object
+    auth = Auth(token)
+
+    try:
+        # Make request
+        result = auth.test()
+
+    except Error:
+        # Check for auth errors
+        return False
+
+    # Check for further errors
+    if not result.successful:
+        return False
+
+    # Return successful
+    return True
 
 
 def do_roll(roll, user):
@@ -240,12 +259,12 @@ def do_roll(roll, user):
     )
 
 
-def send_roll(token, roll, args):
+def send_roll(team, roll, args):
     ''' Posts the roll to Slack
     '''
 
     # Set up chat object
-    chat = Chat(token)
+    chat = Chat(team.bot_token)
 
     try:
         # Attempt to post message
@@ -282,12 +301,20 @@ def make_roll(args):
         global COMMAND
         COMMAND = args['command']
 
-    # Check to see if user has authenticated with the app
-    (valid, token) = check_token(args)
+    # Check to see if team has authenticated with the app
+    team = get_team(args)
 
     # If the user is not valid, let them know
-    if not valid:
-        return token
+    if not team:
+        return AUTH_ERROR
+
+    # Check that the team token is still valid
+    if not is_valid_token(team.token):
+        return AUTH_ERROR
+
+    # Check that the bot token is still valid
+    if not is_valid_token(team.bot_token):
+        return AUTH_ERROR
 
     # If there's no input, use the default roll
     if not args['text']:
@@ -309,7 +336,7 @@ def make_roll(args):
     roll = do_roll(result, args['user_name'])
 
     # Post flip as user
-    err = send_roll(token, roll, args)
+    err = send_roll(team, roll, args)
 
     # If there were problems posting, report it
     if err is not None:

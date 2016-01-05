@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -39,18 +39,15 @@ def home():
         )
 
 
-@APP.route('/authorize')
-def authorize():
-    ''' Render API token authorization page
+@APP.route('/authenticate')
+def authenticate():
+    ''' Redirect to generated Slack authentication url
     '''
-    return render_template(
-        'authorize.html',
-        project=PROJECT_INFO
-    )
+    return redirect(auth.get_redirect())
 
 
-@APP.route('/confirm')
-def confirm():
-    ''' Confirm the API token provided for authorization
+@APP.route('/validate')
+def validate():
+    ''' Validate the returned values from authentication
     '''
-    return redirect(auth.confirm_token(request.args))
+    return redirect(auth.validate_return(request.args))

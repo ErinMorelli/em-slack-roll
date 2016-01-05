@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 #
 # EM Slack Roll
-# Copyright (c) 2015 Erin Morelli
+# Copyright (c) 2015-2016 Erin Morelli
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -40,7 +40,7 @@ def set_project_info():
     '''
 
     # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
-    base_url = 'http://slack-roll.herokuapp.com'
+    base_url = 'https://slack-roll.herokuapp.com'
 
     # Get app info from the dist
     app_name = 'slack_roll'
@@ -50,13 +50,23 @@ def set_project_info():
         'name': app_name,
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
-        'version': '0.1b3',
-        'version_int': 0.113,
+        'github_url': 'https://github.com/ErinMorelli/em-slack-roll',
+        'version': '0.2',
+        'version_int': 0.2,
         'package_path': provider.module_path,
-        'copyright': str(date.today().year),
+        'copyright': '2015-{0}'.format(str(date.today().year)),
+        'client_secret': os.environ['SLACK_CLIENT_SECRET'],
+        'client_id': os.environ['SLACK_CLIENT_ID'],
         'base_url': base_url,
-        'auth_url': '{0}/authorize'.format(base_url),
-        'confirm_url': '{0}/confirm'.format(base_url)
+        'oauth_url': 'https://slack.com/oauth/authorize',
+        'hook_url': 'https://hooks.slack.com/services',
+        'auth_url': '{0}/authenticate'.format(base_url),
+        'valid_url': '{0}/validate'.format(base_url),
+        'team_url': '{0}/authorize'.format(base_url),
+        'team_scope': [
+            'commands',
+            'bot'
+        ]
     }
 
 # Project info
