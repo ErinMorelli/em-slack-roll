@@ -6,8 +6,6 @@ Roll some dice on [Slack](https://slack.com).
 ----------
 ## Usage
 
-**Note:** These examples use `/roll` as the slash command, but yours may vary based on what you selected for step 2 during the manual setup process.
-
 Use command `/roll help` to view this usage information from within Slack.
 
 **Basic roll:**
