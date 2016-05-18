@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-#
-# EM Slack Roll
-# Copyright (c) 2015-2016 Erin Morelli
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-'''
-Module: slack_roll.roll
+# pylint: disable=global-variable-not-assigned,global-statement
+"""
+EM Slack Roll module: slack_roll.roll.
 
     - Parses POST data from Slack
     - Parses user roll request
     - Retrieves and returns roll data
-'''
+
+Copyright (c) 2015-2016 Erin Morelli
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+"""
 
 import re
 import random
@@ -43,18 +43,15 @@ AUTH_ERROR = AUTH_MSG.format(
 
 
 class RollParser(argparse.ArgumentParser):
-    ''' Custom ArgumentParser object for special error and help messages.
-    '''
+    """Custom ArgumentParser object for special error and help messages."""
 
     def error(self, message):
-        ''' Stores all error messages in global errors list
-        '''
+        """Store all error messages in global errors list."""
         global ERRORS
         ERRORS.append(message)
 
-    def print_help(self, dice_roll):
-        ''' Generates help and list messages
-        '''
+    def print_help(self, dice_roll=None):
+        """Generate help and list messages."""
         global ERRORS
         global COMMAND
 
@@ -81,13 +78,11 @@ class RollParser(argparse.ArgumentParser):
             ))
 
 
-class RollAction(argparse.Action):
-    ''' Custom Action object for validating and parsing roll arguments
-    '''
+class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
+    """Custom Action object for validating and parsing roll arguments."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        ''' Validates flip arguments and stores them to namespace
-        '''
+        """Validate flip arguments and stores them to namespace."""
         dice_roll = values.lower()
 
         # Check for help
@@ -160,9 +155,7 @@ class RollAction(argparse.Action):
 
 
 def get_parser():
-    ''' Sets up and returns custom ArgumentParser object
-    '''
-
+    """Set up and returns custom ArgumentParser object."""
     # Create roll parser
     parser = RollParser()
 
@@ -173,21 +166,16 @@ def get_parser():
 
 
 def get_team(args):
-    ''' Checks that the team is authenticated with the app
-        Returns authenticated team token data
-    '''
-
+    """Return authenticated team token data."""
     # Look for team in DB
-    team = Teams.query.get(args['team_id'])
+    team = Teams.query.get(args['team_id'])  # pylint: disable=no-member
 
     # Return token
     return team
 
 
 def is_valid_token(token):
-    ''' Checks that the team has a valid token
-    '''
-
+    """Check that the team has a valid token."""
     # Set auth object
     auth = Auth(token)
 
@@ -208,16 +196,14 @@ def is_valid_token(token):
 
 
 def do_roll(roll, user):
-    ''' Performs requested roll
-    '''
-
+    """Perform requested roll action."""
     # Trackers
     roll_sum = 0
     roll_result = []
     roll_modifier = ''
 
     # Roll dice
-    for count in range(0, roll.count):
+    for _ in range(0, roll.count):
         die_roll = random.randint(1, roll.sides)
         roll_sum += die_roll
         roll_result.append(die_roll)
@@ -260,9 +246,7 @@ def do_roll(roll, user):
 
 
 def send_roll(team, roll, args):
-    ''' Posts the roll to Slack
-    '''
-
+    """Post the roll to Slack."""
     # Set up chat object
     chat = Chat(team.bot_token)
 
@@ -276,18 +260,26 @@ def send_roll(team, roll, args):
         )
 
     except Error as err:
-        # Report if we got any errors
-        return err
+        # Check specifically for channel errors
+        if str(err) == 'channel_not_found':
+            err_msg = "{0} is not authorized to post in this channel.".format(
+                'The {0} bot'.format(sr.PROJECT_INFO['name_full'])
+            )
+            err_msg += ' Please invite it to join this channel and try again.'
+            return err_msg
+
+        # Report any other errors
+        return '{0} encountered an error: {1}'.format(
+            sr.PROJECT_INFO['name_full'],
+            str(err)
+        )
 
     # Return successful
     return
 
 
 def make_roll(args):
-    ''' Wrapper function for roll functions
-        Returned error messages will post as private slackbot messages
-    '''
-
+    """Wrapper function for roll functions."""
     # Reset global error traker
     global ERRORS
     ERRORS = []
@@ -304,16 +296,12 @@ def make_roll(args):
     # Check to see if team has authenticated with the app
     team = get_team(args)
 
-    # If the user is not valid, let them know
-    if not team:
-        return AUTH_ERROR
-
-    # Check that the team token is still valid
-    if not is_valid_token(team.token):
-        return AUTH_ERROR
-
-    # Check that the bot token is still valid
-    if not is_valid_token(team.bot_token):
+    # If the user, team token, and bot token are not valid, let them know
+    if (
+            not team or
+            not is_valid_token(team.token) or
+            not is_valid_token(team.bot_token)
+    ):
         return AUTH_ERROR
 
     # If there's no input, use the default roll
