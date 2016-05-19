@@ -96,6 +96,7 @@ APP = Flask(
 # Set up flask config
 # SET THESE ENV VALUES FOR YOUR OWN INSTALLATION
 APP.config.update({
+    'SECRET_KEY': os.environ['SECURE_KEY'],
     'SQLALCHEMY_DATABASE_URI': os.environ['DATABASE_URL'],
-    'SECRET_KEY': os.environ['SECURE_KEY']
+    'SQLALCHEMY_TRACK_MODIFICATIONS': True
 })

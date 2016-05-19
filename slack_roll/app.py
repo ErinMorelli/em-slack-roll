@@ -19,6 +19,7 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
+import keen
 from flask import redirect, render_template, request
 import slack_roll.auth as auth
 import slack_roll.roll as roll
@@ -29,9 +30,11 @@ from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS
 def home():
     """Render app homepage template."""
     if request.method == 'POST':
+        keen.add_event('post_request', request.form)
         return roll.make_roll(request.form)
 
     else:
+        keen.add_event('get_request', {})
         return render_template(
             'index.html',
             project=PROJECT_INFO,
@@ -42,10 +45,12 @@ def home():
 @APP.route('/authenticate')
 def authenticate():
     """Redirect to generated Slack authentication url."""
+    keen.add_event('authenticate', {})
     return redirect(auth.get_redirect())
 
 
 @APP.route('/validate')
 def validate():
     """Validate the returned values from authentication."""
+    keen.add_event('validate', request.args.to_dict())
     return redirect(auth.validate_return(request.args))

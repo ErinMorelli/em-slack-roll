@@ -24,8 +24,7 @@ from slack_roll.app import APP
 
 if __name__ == '__main__':
     # Start New Relic agent
-    newrelic.agent.initialize()
+    # newrelic.agent.initialize()
 
     # Start Flask app
-    PORT = int(environ.get("PORT", 5000))
-    APP.run(host='0.0.0.0', port=PORT)
+    APP.run(host='0.0.0.0', port=int(environ.get("PORT", 5000)), debug=True)

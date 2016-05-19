@@ -36,7 +36,7 @@ def gen_data_files(*dirs):
     return results
 
 
-# Set up mediahandler package
+# Set up slack_roll package
 setup(
     name='em-slack-roll',
     version='0.3',
@@ -60,6 +60,7 @@ setup(
     install_requires=[
         'Flask',
         'Flask-SQLAlchemy',
+        'keen',
         'newrelic',
         'pkginfo',
         'psycopg2',

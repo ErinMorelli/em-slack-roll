@@ -22,6 +22,7 @@ included in all copies or substantial portions of the Software.
 
 from urllib import urlencode
 from datetime import timedelta
+import keen
 from flask import abort
 from slacker import OAuth, Error
 from slack_roll import PROJECT_INFO
@@ -64,14 +65,17 @@ def validate_state(state):
 
     except SignatureExpired:
         # Token has expired
+        keen.add_event('token_expired', state)
         abort(400)
 
     except BadSignature:
         # Token is not authorized
+        keen.add_event('token_bad_signature', state)
         abort(401)
 
     if state_token != PROJECT_INFO['client_id']:
         # Token is not authorized
+        keen.add_event('token_not_authorized', state)
         abort(401)
 
     # Return success
@@ -93,9 +97,11 @@ def get_token(code):
         )
 
     except Error:
+        keen.add_event('oauth_error', code)
         abort(400)
 
     if not result.successful:
+        keen.add_event('oauth_failed', code)
         abort(400)
 
     # Setup return info
@@ -123,6 +129,7 @@ def store_data(info):
         new_team.bot_token = info['bot_token']
 
         # Store new user
+        keen.add_event('team_added', new_team.__dict__)
         DB.session.add(new_team)
 
     else:
@@ -130,6 +137,7 @@ def store_data(info):
         team.token = info['token']
         team.bot_id = info['bot_id']
         team.bot_token = info['bot_token']
+        keen.add_event('team_updated', new_team.__dict__)
 
     # Update DB
     DB.session.commit()
@@ -141,6 +149,7 @@ def validate_return(args):
     """Wrapper function for data validation functions."""
     # Make sure we have args
     if not args.get('state') or not args.get('code'):
+        keen.add_event('missing_args', args.to_dict())
         abort(400)
 
     # Validate state
