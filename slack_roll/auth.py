@@ -22,6 +22,7 @@ included in all copies or substantial portions of the Software.
 
 from urllib import urlencode
 from datetime import timedelta
+from keen import add_event
 from flask import abort
 from slacker import OAuth, Error
 from slack_roll import PROJECT_INFO
@@ -64,14 +65,24 @@ def validate_state(state):
 
     except SignatureExpired:
         # Token has expired
+        add_event('token_expired', {
+            'state': state
+        })
         abort(400)
 
     except BadSignature:
         # Token is not authorized
+        add_event('token_not_authorized', {
+            'state': state
+        })
         abort(401)
 
     if state_token != PROJECT_INFO['client_id']:
         # Token is not authorized
+        add_event('token_not_valid', {
+            'state': state,
+            'state_token': state_token
+        })
         abort(401)
 
     # Return success
@@ -92,10 +103,18 @@ def get_token(code):
             code=code
         )
 
-    except Error:
+    except Error as err:
+        add_event('oauth_error', {
+            'code': code,
+            'error': str(err)
+        })
         abort(400)
 
     if not result.successful:
+        add_event('oauth_unsuccessful', {
+            'code': code,
+            'result': result.__dict__
+        })
         abort(400)
 
     # Setup return info
@@ -123,6 +142,7 @@ def store_data(info):
         new_team.bot_token = info['bot_token']
 
         # Store new user
+        add_event('team_added', info)
         DB.session.add(new_team)
 
     else:
@@ -130,6 +150,7 @@ def store_data(info):
         team.token = info['token']
         team.bot_id = info['bot_id']
         team.bot_token = info['bot_token']
+        add_event('team_updated', info)
 
     # Update DB
     DB.session.commit()
@@ -141,6 +162,7 @@ def validate_return(args):
     """Wrapper function for data validation functions."""
     # Make sure we have args
     if not args.get('state') or not args.get('code'):
+        add_event('missing_args', args.to_dict())
         abort(400)
 
     # Validate state
@@ -153,6 +175,7 @@ def validate_return(args):
     store_data(token_info)
 
     # Set success url
+    add_event('validate_success', token_info)
     redirect_url = '{0}?success=1'.format(PROJECT_INFO['base_url'])
 
     # Return successful

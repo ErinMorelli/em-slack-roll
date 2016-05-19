@@ -24,6 +24,7 @@ included in all copies or substantial portions of the Software.
 
 import re
 import random
+from keen import add_event
 import argparse
 import slack_roll as sr
 from slack_roll.storage import Teams
@@ -101,6 +102,9 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
 
         # Check that roll is valid
         if result is None:
+            add_event('roll_invalid', {
+                'roll': dice_roll
+            })
             parser.error(
                 "'{0}' is not a recognized roll format".format(
                     dice_roll.encode('utf-8')
@@ -136,6 +140,9 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
             if result.group(3) is not None:
 
                 if result.group(4) is None:
+                    add_event('roll_modifier_invalid', {
+                        'roll': dice_roll
+                    })
                     parser.error(
                         "'{0}' is not a recognized roll format".format(
                             dice_roll.encode('utf-8')
@@ -183,12 +190,19 @@ def is_valid_token(token):
         # Make request
         result = auth.test()
 
-    except Error:
+    except Error as err:
         # Check for auth errors
+        add_event(str(err), {
+            'token': token
+        })
         return False
 
     # Check for further errors
     if not result.successful:
+        add_event('token_invalid', {
+            'token': token,
+            'result': result.__dict__
+        })
         return False
 
     # Return successful
@@ -260,6 +274,12 @@ def send_roll(team, roll, args):
         )
 
     except Error as err:
+        add_event(str(err), {
+            'team': team.__dict__,
+            'roll': roll,
+            'args': args.to_dict()
+        })
+
         # Check specifically for channel errors
         if str(err) == 'channel_not_found':
             err_msg = "{0} is not authorized to post in this channel.".format(
@@ -286,6 +306,7 @@ def make_roll(args):
 
     # Make sure this is a valid slash command
     if args['command'] not in sr.ALLOWED_COMMANDS:
+        add_event('command_not_allowed', args.to_dict())
         return '"{0}" is not an allowed command'.format(args['command'])
 
     else:
@@ -302,6 +323,10 @@ def make_roll(args):
             not is_valid_token(team.token) or
             not is_valid_token(team.bot_token)
     ):
+        add_event('auth_error', {
+            'args': args.to_dict(),
+            'team': team.__dict__
+        })
         return AUTH_ERROR
 
     # If there's no input, use the default roll
@@ -318,6 +343,9 @@ def make_roll(args):
 
     # Report any errors from parser
     if len(ERRORS) > 0:
+        add_event('parser_errors', {
+            'errors': ERRORS
+        })
         return ERRORS[0]
 
     # Get requested flip
@@ -331,4 +359,7 @@ def make_roll(args):
         return err
 
     # Return successful
+    add_event('roll_success', {
+        'roll': roll
+    })
     return ('', 204)
