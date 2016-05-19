@@ -22,10 +22,9 @@ included in all copies or substantial portions of the Software.
 
 from urllib import urlencode
 from datetime import timedelta
-from keen import add_event
 from flask import abort
 from slacker import OAuth, Error
-from slack_roll import PROJECT_INFO
+from slack_roll import PROJECT_INFO, report_event
 from slack_roll.storage import Teams, DB
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -65,21 +64,21 @@ def validate_state(state):
 
     except SignatureExpired:
         # Token has expired
-        add_event('token_expired', {
+        report_event('token_expired', {
             'state': state
         })
         abort(400)
 
     except BadSignature:
         # Token is not authorized
-        add_event('token_not_authorized', {
+        report_event('token_not_authorized', {
             'state': state
         })
         abort(401)
 
     if state_token != PROJECT_INFO['client_id']:
         # Token is not authorized
-        add_event('token_not_valid', {
+        report_event('token_not_valid', {
             'state': state,
             'state_token': state_token
         })
@@ -104,14 +103,14 @@ def get_token(code):
         )
 
     except Error as err:
-        add_event('oauth_error', {
+        report_event('oauth_error', {
             'code': code,
             'error': str(err)
         })
         abort(400)
 
     if not result.successful:
-        add_event('oauth_unsuccessful', {
+        report_event('oauth_unsuccessful', {
             'code': code,
             'result': result.__dict__
         })
@@ -142,7 +141,7 @@ def store_data(info):
         new_team.bot_token = info['bot_token']
 
         # Store new user
-        add_event('team_added', info)
+        report_event('team_added', info)
         DB.session.add(new_team)
 
     else:
@@ -150,7 +149,7 @@ def store_data(info):
         team.token = info['token']
         team.bot_id = info['bot_id']
         team.bot_token = info['bot_token']
-        add_event('team_updated', info)
+        report_event('team_updated', info)
 
     # Update DB
     DB.session.commit()
@@ -161,21 +160,20 @@ def store_data(info):
 def validate_return(args):
     """Wrapper function for data validation functions."""
     # Make sure we have args
-    if not args.get('state') or not args.get('code'):
-        add_event('missing_args', args.to_dict())
+    if not args['state'] or not args['code']:
+        report_event('missing_args', args)
         abort(400)
 
     # Validate state
-    validate_state(args.get('state'))
+    validate_state(args['state'])
 
     # Get access token and info
-    token_info = get_token(args.get('code'))
+    token_info = get_token(args['code'])
 
     # Set up storage methods
     store_data(token_info)
 
     # Set success url
-    add_event('validate_success', token_info)
     redirect_url = '{0}?success=1'.format(PROJECT_INFO['base_url'])
 
     # Return successful

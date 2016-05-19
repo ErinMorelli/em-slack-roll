@@ -24,11 +24,10 @@ included in all copies or substantial portions of the Software.
 
 import re
 import random
-from keen import add_event
 import argparse
-import slack_roll as sr
-from slack_roll.storage import Teams
 from slacker import Auth, Chat, Error
+from slack_roll.storage import Teams
+from slack_roll import PROJECT_INFO, ALLOWED_COMMANDS, report_event
 
 
 # Set globals
@@ -38,8 +37,8 @@ COMMAND = None
 # Set not authenticated error message
 AUTH_MSG = "{0} is not authorized to post in this team: {1}"
 AUTH_ERROR = AUTH_MSG.format(
-    sr.PROJECT_INFO['name_full'],
-    '*<{0}|Click here to authorize>*'.format(sr.PROJECT_INFO['base_url'])
+    PROJECT_INFO['name_full'],
+    '*<{0}|Click here to authorize>*'.format(PROJECT_INFO['base_url'])
 )
 
 
@@ -68,14 +67,14 @@ class RollParser(argparse.ArgumentParser):
             help_msg += "`{command} help`\n\tShows this message\n"
 
             ERRORS.append(help_msg.format(
-                app_name=sr.PROJECT_INFO['name_full'],
+                app_name=PROJECT_INFO['name_full'],
                 command=COMMAND
             ))
 
         elif dice_roll == 'version':
             ERRORS.append('{app_name} v{version}'.format(
-                app_name=sr.PROJECT_INFO['name_full'],
-                version=sr.PROJECT_INFO['version']
+                app_name=PROJECT_INFO['name_full'],
+                version=PROJECT_INFO['version']
             ))
 
 
@@ -102,7 +101,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
 
         # Check that roll is valid
         if result is None:
-            add_event('roll_invalid', {
+            report_event('roll_invalid', {
                 'roll': dice_roll
             })
             parser.error(
@@ -140,7 +139,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
             if result.group(3) is not None:
 
                 if result.group(4) is None:
-                    add_event('roll_modifier_invalid', {
+                    report_event('roll_modifier_invalid', {
                         'roll': dice_roll
                     })
                     parser.error(
@@ -192,14 +191,14 @@ def is_valid_token(token):
 
     except Error as err:
         # Check for auth errors
-        add_event(str(err), {
+        report_event(str(err), {
             'token': token
         })
         return False
 
     # Check for further errors
     if not result.successful:
-        add_event('token_invalid', {
+        report_event('token_invalid', {
             'token': token,
             'result': result.__dict__
         })
@@ -274,23 +273,23 @@ def send_roll(team, roll, args):
         )
 
     except Error as err:
-        add_event(str(err), {
+        report_event(str(err), {
             'team': team.__dict__,
             'roll': roll,
-            'args': args.to_dict()
+            'args': args
         })
 
         # Check specifically for channel errors
         if str(err) == 'channel_not_found':
             err_msg = "{0} is not authorized to post in this channel.".format(
-                'The {0} bot'.format(sr.PROJECT_INFO['name_full'])
+                'The {0} bot'.format(PROJECT_INFO['name_full'])
             )
             err_msg += ' Please invite it to join this channel and try again.'
             return err_msg
 
         # Report any other errors
         return '{0} encountered an error: {1}'.format(
-            sr.PROJECT_INFO['name_full'],
+            PROJECT_INFO['name_full'],
             str(err)
         )
 
@@ -303,10 +302,11 @@ def make_roll(args):
     # Reset global error traker
     global ERRORS
     ERRORS = []
+    print args
 
     # Make sure this is a valid slash command
-    if args['command'] not in sr.ALLOWED_COMMANDS:
-        add_event('command_not_allowed', args.to_dict())
+    if args['command'] not in ALLOWED_COMMANDS:
+        report_event('command_not_allowed', args)
         return '"{0}" is not an allowed command'.format(args['command'])
 
     else:
@@ -323,8 +323,8 @@ def make_roll(args):
             not is_valid_token(team.token) or
             not is_valid_token(team.bot_token)
     ):
-        add_event('auth_error', {
-            'args': args.to_dict(),
+        report_event('auth_error', {
+            'args': args,
             'team': team.__dict__
         })
         return AUTH_ERROR
@@ -343,7 +343,7 @@ def make_roll(args):
 
     # Report any errors from parser
     if len(ERRORS) > 0:
-        add_event('parser_errors', {
+        report_event('parser_errors', {
             'errors': ERRORS
         })
         return ERRORS[0]
@@ -359,7 +359,4 @@ def make_roll(args):
         return err
 
     # Return successful
-    add_event('roll_success', {
-        'roll': roll
-    })
     return ('', 204)

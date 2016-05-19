@@ -20,6 +20,8 @@ included in all copies or substantial portions of the Software.
 """
 
 import os
+from threading import Thread
+import keen
 from datetime import date
 from flask import Flask
 from pkg_resources import get_provider
@@ -48,8 +50,8 @@ def set_project_info():
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
         'github_url': 'https://github.com/ErinMorelli/em-slack-roll',
-        'version': '1.5',
-        'version_int': 1.5,
+        'version': '1.6',
+        'version_int': 1.6,
         'package_path': provider.module_path,
         'copyright': '2015-{0}'.format(str(date.today().year)),
         'client_secret': os.environ['SLACK_CLIENT_SECRET'],
@@ -80,6 +82,21 @@ ALLOWED_COMMANDS = [
     '/roll_dice',
     '/dice_roll'
 ]
+
+
+def report_event(name, event):
+    """Asyncronously report an event."""
+    # Set up thread
+    event_report = Thread(
+        target=keen.add_event,
+        args=(name, event)
+    )
+
+    # Set up as asyncronous daemon
+    event_report.daemon = True
+
+    # Start event report
+    event_report.start()
 
 
 # =============================================================================
