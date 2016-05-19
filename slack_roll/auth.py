@@ -51,6 +51,7 @@ def get_redirect():
     location = "{0}?{1}".format(PROJECT_INFO['oauth_url'], params)
 
     # Return URL for redirect
+    keen.add_event('get_redirect', location)
     return location
 
 
@@ -75,7 +76,10 @@ def validate_state(state):
 
     if state_token != PROJECT_INFO['client_id']:
         # Token is not authorized
-        keen.add_event('token_not_authorized', state)
+        keen.add_event('token_not_authorized', {
+            'state': state,
+            'state_token': state_token
+        })
         abort(401)
 
     # Return success
@@ -162,6 +166,7 @@ def validate_return(args):
     store_data(token_info)
 
     # Set success url
+    keen.add_event('validate_success', token_info)
     redirect_url = '{0}?success=1'.format(PROJECT_INFO['base_url'])
 
     # Return successful

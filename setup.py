@@ -39,7 +39,7 @@ def gen_data_files(*dirs):
 # Set up slack_roll package
 setup(
     name='em-slack-roll',
-    version='0.3',
+    version='0.4',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
     url='http://slack-roll.herokuapp.com',

@@ -67,14 +67,14 @@ class RollParser(argparse.ArgumentParser):
             help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
             help_msg += "`{command} help`\n\tShows this message\n"
 
-            keen.add_event('show_help', {})
+            keen.add_event('show_help', dice_roll)
             ERRORS.append(help_msg.format(
                 app_name=sr.PROJECT_INFO['name_full'],
                 command=COMMAND
             ))
 
         elif dice_roll == 'version':
-            keen.add_event('show_version', {})
+            keen.add_event('show_version', dice_roll)
             ERRORS.append('{app_name} v{version}'.format(
                 app_name=sr.PROJECT_INFO['name_full'],
                 version=sr.PROJECT_INFO['version']
