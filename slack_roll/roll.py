@@ -168,7 +168,7 @@ def get_parser():
 def get_team(args):
     """Return authenticated team token data."""
     # Look for team in DB
-    team = Teams.query.get(args['team_id'])  # pylint: disable=no-member
+    team = Teams.query.get(args['team_id'])
 
     # Return token
     return team

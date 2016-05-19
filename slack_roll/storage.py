@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# pylint: disable=no-name-in-module,import-error,invalid-name
+# pylint: disable=invalid-name
 """
 EM Slack Roll module: slack_roll.storage.
 
@@ -47,7 +47,7 @@ class Teams(DB.Model):  # pylint: disable=too-few-public-methods
         self.added = datetime.now()
 
     def __repr__(self):
-        """Friendly represenation of Team for debugging."""
+        """Friendly representation of Team for debugging."""
         return '<Team {0}>'.format(self.id)
 
 
