@@ -25,7 +25,6 @@ included in all copies or substantial portions of the Software.
 import re
 import random
 import argparse
-import keen
 import slack_roll as sr
 from slack_roll.storage import Teams
 from slacker import Auth, Chat, Error
@@ -67,14 +66,12 @@ class RollParser(argparse.ArgumentParser):
             help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
             help_msg += "`{command} help`\n\tShows this message\n"
 
-            keen.add_event('show_help', dice_roll)
             ERRORS.append(help_msg.format(
                 app_name=sr.PROJECT_INFO['name_full'],
                 command=COMMAND
             ))
 
         elif dice_roll == 'version':
-            keen.add_event('show_version', dice_roll)
             ERRORS.append('{app_name} v{version}'.format(
                 app_name=sr.PROJECT_INFO['name_full'],
                 version=sr.PROJECT_INFO['version']
@@ -104,7 +101,6 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
 
         # Check that roll is valid
         if result is None:
-            keen.add_event('invalid_roll_format', dice_roll)
             parser.error(
                 "'{0}' is not a recognized roll format".format(
                     dice_roll.encode('utf-8')
@@ -140,7 +136,6 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
             if result.group(3) is not None:
 
                 if result.group(4) is None:
-                    keen.add_event('invalid_roll_modifier', dice_roll)
                     parser.error(
                         "'{0}' is not a recognized roll format".format(
                             dice_roll.encode('utf-8')
@@ -190,12 +185,10 @@ def is_valid_token(token):
 
     except Error:
         # Check for auth errors
-        keen.add_event('token_invalid', token)
         return False
 
     # Check for further errors
     if not result.successful:
-        keen.add_event('token_unsuccessful', token)
         return False
 
     # Return successful
@@ -267,8 +260,6 @@ def send_roll(team, roll, args):
         )
 
     except Error as err:
-        keen.add_event(str(err), args)
-
         # Check specifically for channel errors
         if str(err) == 'channel_not_found':
             err_msg = "{0} is not authorized to post in this channel.".format(
@@ -295,7 +286,6 @@ def make_roll(args):
 
     # Make sure this is a valid slash command
     if args['command'] not in sr.ALLOWED_COMMANDS:
-        keen.add_event('invalid_command', args)
         return '"{0}" is not an allowed command'.format(args['command'])
 
     else:
@@ -312,7 +302,6 @@ def make_roll(args):
             not is_valid_token(team.token) or
             not is_valid_token(team.bot_token)
     ):
-        keen.add_event('auth_error', args)
         return AUTH_ERROR
 
     # If there's no input, use the default roll
@@ -329,10 +318,6 @@ def make_roll(args):
 
     # Report any errors from parser
     if len(ERRORS) > 0:
-        keen.add_event('parser_errors', {
-            'args': args,
-            'errors': ERRORS
-        })
         return ERRORS[0]
 
     # Get requested flip
@@ -346,5 +331,4 @@ def make_roll(args):
         return err
 
     # Return successful
-    keen.add_event('successful_roll', args)
     return ('', 204)
