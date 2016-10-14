@@ -36,9 +36,9 @@ class Teams(DB.Model):  # pylint: disable=too-few-public-methods
     __tablename__ = 'roll_teams'
 
     id = DB.Column(DB.String(16), primary_key=True)
-    token = DB.Column(DB.String(60))
+    token = DB.Column(DB.String(255))
     bot_id = DB.Column(DB.String(16))
-    bot_token = DB.Column(DB.String(60))
+    bot_token = DB.Column(DB.String(255))
     added = DB.Column(DB.DateTime)
 
     def __init__(self, team_id):
