@@ -43,7 +43,7 @@ __module__ = "slack_leguide.{0}".format(__file__)
 def set_project_info():
     """Set project information from setup tools installation."""
     # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
-    base_url = 'https://slack-roll.herokuapp.com'
+    base_url = 'https://leguide.herokuapp.com'
 
     # Get app info from the dist
     app_name = 'slack_leguide'
@@ -51,7 +51,7 @@ def set_project_info():
 
     return {
         'name': app_name,
-        'name_full': 'E2 Slack leguide',
+        'name_full': 'EZ Slack leguide',
         'author_url': 'http://leguide.herokuapp.com/',
         'github_url': 'https://github.com/EkielZan/Ez-slack-leguide',
         'version': '1.0',
