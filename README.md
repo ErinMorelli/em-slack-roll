@@ -1,5 +1,6 @@
-# [EZ Slack Roll]
+# [EZ Slack Le Guide]
 RPG servant bot on [Slack](https://slack.com).
+Hosted on Heroku (http://leguide.herokuapp.com/)
 
 Based on ErinMorelli's slack-roll bot hosted on heroku (http://slack-roll.herokuapp.com/)
 
