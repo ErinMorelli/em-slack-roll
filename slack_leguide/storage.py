@@ -2,12 +2,16 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name
 """
-EM Slack Roll module: slack_roll.storage.
+EM Slack Roll module: slack_leguide.storage.
 
     - Sets database schema for storing api tokens
     - Initializes database structure
 
 Copyright (c) 2015-2016 Erin Morelli
+
+Additional codes, improvements, additional features :
+Copyright (c) 2017 Gilles Dejeneffe
+
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -22,7 +26,7 @@ included in all copies or substantial portions of the Software.
 """
 
 from datetime import datetime
-from slack_roll import APP
+from slack_leguide import APP
 from flask.ext.sqlalchemy import SQLAlchemy
 
 

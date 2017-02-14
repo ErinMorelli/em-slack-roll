@@ -1,11 +1,15 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_roll.templates.
+EM Slack Roll module: slack_leguide.templates.
 
     - Homepage template for hosted rolling
 
 Copyright (c) 2015-2016 Erin Morelli
+
+Additional codes, improvements, additional features :
+Copyright (c) 2017 Gilles Dejeneffe
+
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -19,4 +23,4 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
-__module__ = "slack_roll.templates.{0}".format(__file__)
+__module__ = "slack_leguide.templates.{0}".format(__file__)

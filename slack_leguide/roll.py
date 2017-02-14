@@ -2,13 +2,17 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=global-variable-not-assigned,global-statement
 """
-EM Slack Roll module: slack_roll.roll.
+EZ Slack Roll module: slack_leguide.roll.
 
     - Parses POST data from Slack
     - Parses user roll request
     - Retrieves and returns roll data
 
 Copyright (c) 2015-2016 Erin Morelli
+
+Additional codes, improvements, additional features :
+Copyright (c) 2017 Gilles Dejeneffe
+
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -26,8 +30,8 @@ import re
 import random
 import argparse
 from slacker import Auth, Chat, Error
-from slack_roll.storage import Teams
-from slack_roll import PROJECT_INFO, ALLOWED_COMMANDS, report_event
+from slack_leguide.storage import Teams
+from slack_leguide import PROJECT_INFO, ALLOWED_COMMANDS, report_event
 
 
 # Set globals
@@ -65,6 +69,8 @@ class RollParser(argparse.ArgumentParser):
             help_msg += "`{command} 1d6+3`\n\t"
             help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
             help_msg += "`{command} help`\n\tShows this message\n"
+            help_msg += "`roim`\n\tRolls a D666 from INSMV\n\n"
+            help_msg += "`fac`\n\tFlip a coin (roll 2 side dice)\n\n"
 
             ERRORS.append(help_msg.format(
                 app_name=PROJECT_INFO['name_full'],

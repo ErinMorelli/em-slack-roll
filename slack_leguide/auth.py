@@ -8,6 +8,10 @@ EM Slack Roll module: slack_tableflip.auth.
 
 Copyright (c) 2015-2016 Erin Morelli
 
+Additional codes, improvements, additional features :
+Copyright (c) 2017 Gilles Dejeneffe
+
+
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -24,8 +28,8 @@ from urllib import urlencode
 from datetime import timedelta
 from flask import abort
 from slacker import OAuth, Error
-from slack_roll import PROJECT_INFO, report_event
-from slack_roll.storage import Teams, DB
+from slack_leguide import PROJECT_INFO, report_event
+from slack_leguide.storage import Teams, DB
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 

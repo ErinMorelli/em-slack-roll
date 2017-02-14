@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_roll.app.
+EM Slack Roll module: slack_leguide.app.
 
     - Flask server configuration
 
 Copyright (c) 2015-2016 Erin Morelli
+
+Additional codes, improvements, additional features :
+Copyright (c) 2017 Gilles Dejeneffe
+
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -20,9 +24,9 @@ included in all copies or substantial portions of the Software.
 """
 
 from flask import redirect, render_template, request
-import slack_roll.auth as auth
-import slack_roll.roll as roll
-from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
+import slack_leguide.auth as auth
+import slack_leguide.roll as roll
+from slack_leguide import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
 
 
 @APP.route('/', methods=['GET', 'POST'])
