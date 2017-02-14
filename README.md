@@ -1,7 +1,7 @@
-# [EM Slack Roll](https://slack-roll.herokuapp.com)
-Roll some dice on [Slack](https://slack.com).
+# [EZ Slack Roll]
+RPG servant bot on [Slack](https://slack.com).
 
-[Click here](http://slack-roll.herokuapp.com) to setup EM Slack Roll for your team.
+Based on ErinMorelli's slack-roll bot hosted on heroku (http://slack-roll.herokuapp.com/)
 
 ----------
 ## Usage
@@ -31,3 +31,15 @@ Rolls a 4 10-sided dice.
     /roll 1d6+3
 
 Rolls a single 6-sided die with a +3 modifier.
+
+**Roll a D666 (ins/mv) dice:**
+
+    /roim
+    
+Rolls Three 6-sided die and display the result as a insmv 666 dice. 
+
+**Flip a coin:**
+
+    /fac
+    
+Flip a coin or roll a two sided dice. 
