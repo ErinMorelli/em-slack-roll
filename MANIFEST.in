@@ -2,7 +2,7 @@
 include LICENSE README.md
 
 # Include template files
-recursive-include slack_roll/templates *
+recursive-include slack_leguide/templates *
 
 # Exclude junk
 global-exclude .DS_Store

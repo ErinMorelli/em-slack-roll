@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
-Run the EM Slack Roll application.
+EM Slack Roll module: slack_leguide.templates.
+
+    - Homepage template for hosted rolling
 
 Copyright (c) 2015-2016 Erin Morelli
 
@@ -21,14 +23,4 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
-from os import environ
-import newrelic.agent
-from slack_roll.app import APP
-
-
-if __name__ == '__main__':
-    # Start New Relic agent
-    newrelic.agent.initialize()
-
-    # Start Flask app
-    APP.run(host='0.0.0.0', port=int(environ.get("PORT", 5000)))
+__module__ = "slack_leguide.templates.{0}".format(__file__)
