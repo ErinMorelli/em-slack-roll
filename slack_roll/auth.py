@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_tableflip.auth.
-
-    - Confirms Slack API Token provided by the user is valid
-    - Stores authorized token data
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -20,8 +15,8 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
-from urllib import urlencode
 from datetime import timedelta
+from urllib.parse import urlencode
 from flask import abort
 from slacker import OAuth, Error
 from slack_roll import PROJECT_INFO, report_event
@@ -135,10 +130,12 @@ def store_data(info):
 
     if team is None:
         # Create new team
-        new_team = Teams(info['team_id'])
-        new_team.token = info['token']
-        new_team.bot_id = info['bot_id']
-        new_team.bot_token = info['bot_token']
+        new_team = Teams(
+            team_id=info['team_id'],
+            token=info['token'],
+            bot_id=info['bot_id'],
+            bot_token=info['bot_token']
+        )
 
         # Store new user
         report_event('team_added', info)
@@ -154,11 +151,9 @@ def store_data(info):
     # Update DB
     DB.session.commit()
 
-    return
-
 
 def validate_return(args):
-    """Wrapper function for data validation functions."""
+    """Run data validation functions."""
     # Make sure we have args
     if not args['state'] or not args['code']:
         report_event('missing_args', args)

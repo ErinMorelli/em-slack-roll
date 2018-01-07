@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_roll.
-
-    - Sets up Flask application and module constants
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -20,11 +16,11 @@ included in all copies or substantial portions of the Software.
 """
 
 import os
-from threading import Thread
-import keen
 from datetime import date
-from flask import Flask
+from threading import Thread
 from pkg_resources import get_provider
+import keen
+from flask import Flask
 
 
 # =============================================================================
@@ -50,15 +46,14 @@ def set_project_info():
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
         'github_url': 'https://github.com/ErinMorelli/em-slack-roll',
-        'version': '1.7',
-        'version_int': 1.7,
+        'version': '1.8',
+        'version_int': 1.8,
         'package_path': provider.module_path,
         'copyright': '2015-{0}'.format(str(date.today().year)),
         'client_secret': os.environ['SLACK_CLIENT_SECRET'],
         'client_id': os.environ['SLACK_CLIENT_ID'],
         'base_url': base_url,
         'oauth_url': 'https://slack.com/oauth/authorize',
-        'hook_url': 'https://hooks.slack.com/services',
         'auth_url': '{0}/authenticate'.format(base_url),
         'valid_url': '{0}/validate'.format(base_url),
         'team_url': '{0}/authorize'.format(base_url),
@@ -67,6 +62,7 @@ def set_project_info():
             'bot'
         ]
     }
+
 
 # Project info
 PROJECT_INFO = set_project_info()
@@ -85,14 +81,14 @@ ALLOWED_COMMANDS = [
 
 
 def report_event(name, event):
-    """Asyncronously report an event."""
+    """Asynchronously report an event."""
     # Set up thread
     event_report = Thread(
         target=keen.add_event,
         args=(name, event)
     )
 
-    # Set up as asyncronous daemon
+    # Set up as asynchronous daemon
     event_report.daemon = True
 
     # Start event report
@@ -103,7 +99,7 @@ def report_event(name, event):
 # Flask App Configuration
 # =============================================================================
 
-# Initalize flask app
+# Initialize flask app
 APP = Flask(
     'em-slack-roll',
     template_folder=TEMPLATE_DIR,

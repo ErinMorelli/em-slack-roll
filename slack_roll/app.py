@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_roll.app.
-
-    - Flask server configuration
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -29,15 +25,14 @@ from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
 def home():
     """Render app homepage template."""
     if request.method == 'POST':
-        report_event('post_request', request.form.to_dict())
-        return roll.make_roll(request.form.to_dict())
+        report_event('post_request', request.get_json())
+        return roll.make_roll(request.get_json())
 
-    else:
-        return render_template(
-            'index.html',
-            project=PROJECT_INFO,
-            allowed_commands=ALLOWED_COMMANDS
-        )
+    return render_template(
+        'index.html',
+        project=PROJECT_INFO,
+        allowed_commands=ALLOWED_COMMANDS
+    )
 
 
 @APP.route('/authenticate')

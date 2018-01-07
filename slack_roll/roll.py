@@ -2,13 +2,7 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=global-variable-not-assigned,global-statement
 """
-EM Slack Roll module: slack_roll.roll.
-
-    - Parses POST data from Slack
-    - Parses user roll request
-    - Retrieves and returns roll data
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -50,7 +44,7 @@ class RollParser(argparse.ArgumentParser):
         global ERRORS
         ERRORS.append(message)
 
-    def print_help(self, dice_roll=None):
+    def print_help(self, dice_roll=None):  # pylint: disable=arguments-differ
         """Generate help and list messages."""
         global ERRORS
         global COMMAND
@@ -234,12 +228,8 @@ def do_roll(roll, user):
     # Format message
     formatted_result = ',  '.join(str(result) for result in roll_result)
 
-    # Set plural
-    die_word = 'dice'
-
-    # Set singular case
-    if roll.count == 1:
-        die_word = 'die'
+    # Set singular/plural word
+    die_word = 'die' if roll.count == 1 else 'dice'
 
     # Set response
     response = '_{user} rolled {count} {sides}-sided {die}:_'.format(
@@ -293,26 +283,24 @@ def send_roll(team, roll, args):
             str(err)
         )
 
-    # Return successful
-    return
+    # Return no errors
+    return None
 
 
 def make_roll(args):
-    """Wrapper function for roll functions."""
-    # Reset global error traker
+    """Run dice roll functions."""
+    # Reset global error tracker
     global ERRORS
     ERRORS = []
-    print args
 
     # Make sure this is a valid slash command
     if args['command'] not in ALLOWED_COMMANDS:
         report_event('command_not_allowed', args)
         return '"{0}" is not an allowed command'.format(args['command'])
 
-    else:
-        # Set global command value to access later
-        global COMMAND
-        COMMAND = args['command']
+    # Set global command value to access later
+    global COMMAND
+    COMMAND = args['command']
 
     # Check to see if team has authenticated with the app
     team = get_team(args)
@@ -330,10 +318,7 @@ def make_roll(args):
         return AUTH_ERROR
 
     # If there's no input, use the default roll
-    if not args['text']:
-        dice_roll = 'd6'
-    else:
-        dice_roll = args['text']
+    dice_roll = 'd6' if not args['text'] else args['text']
 
     # Get parser
     parser = get_parser()
@@ -342,7 +327,7 @@ def make_roll(args):
     result = parser.parse_args([dice_roll])
 
     # Report any errors from parser
-    if len(ERRORS) > 0:
+    if ERRORS:
         report_event('parser_errors', {
             'errors': ERRORS
         })

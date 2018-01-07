@@ -1,11 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 """
-EM Slack Roll module: slack_roll.templates.
-
-    - Homepage template for hosted rolling
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

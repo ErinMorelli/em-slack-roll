@@ -2,12 +2,7 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name
 """
-EM Slack Roll module: slack_roll.storage.
-
-    - Sets database schema for storing api tokens
-    - Initializes database structure
-
-Copyright (c) 2015-2016 Erin Morelli
+Copyright (c) 2015-2018 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -23,7 +18,8 @@ included in all copies or substantial portions of the Software.
 
 from datetime import datetime
 from slack_roll import APP
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 
 # Create database
@@ -39,22 +35,27 @@ class Teams(DB.Model):  # pylint: disable=too-few-public-methods
     token = DB.Column(DB.String(255))
     bot_id = DB.Column(DB.String(16))
     bot_token = DB.Column(DB.String(255))
-    added = DB.Column(DB.DateTime)
+    added = DB.Column(DB.DateTime, default=datetime.now)
 
-    def __init__(self, team_id):
+    def __init__(self, team_id, token, bot_id, bot_token):
         """Initialize new Team in db."""
         self.id = team_id
-        self.added = datetime.now()
+        self.token = token
+        self.bot_id = bot_id
+        self.bot_token = bot_token
 
     def __repr__(self):
         """Friendly representation of Team for debugging."""
-        return '<Team {0}>'.format(self.id)
+        return '<Team id={team} bot_id={bot}>'.format(
+            team=self.id,
+            bot=self.bot_id
+        )
 
 
 try:
     # Attempt to initialize database
     DB.create_all()
 
-except:  # pylint: disable=bare-except
+except SQLAlchemyError:
     # Other wise, refresh the session
     DB.session.rollback()
