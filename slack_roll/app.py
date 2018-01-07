@@ -25,8 +25,8 @@ from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
 def home():
     """Render app homepage template."""
     if request.method == 'POST':
-        report_event('post_request', request.get_json())
-        return roll.make_roll(request.get_json())
+        report_event('post_request', request.form.to_dict())
+        return roll.make_roll(request.form.to_dict())
 
     return render_template(
         'index.html',
