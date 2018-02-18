@@ -65,13 +65,19 @@
 
                 <pre><code>/roll 4d10</code></pre>
 
-                <p>Rolls a 4 10-sided dice.</p>
+                <p>Rolls 4 10-sided dice.</p>
 
-                 <p><strong>Specify a modifier:</strong></p>
+                <p><strong>Specify a modifier:</strong></p>
 
                 <pre><code>/roll 1d6+3</code></pre>
 
                 <p>Rolls a single 6-sided die with a +3 modifier.</p>
+
+                <p><strong>Track hits and misses:</strong></p>
+
+                <pre><code>/roll 10d6 hit5</code></pre>
+
+                <p>Rolls 10 6-sided dice and counts hits for results >= 5 and misses for those < 5. Results will also count how many hits are critical (the highest possible roll value) and how many misses are critical (the lowest possible roll value, 1).</p>
 
             </section>
             <footer>

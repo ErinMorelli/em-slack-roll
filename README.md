@@ -31,3 +31,9 @@ Rolls a 4 10-sided dice.
     /roll 1d6+3
 
 Rolls a single 6-sided die with a +3 modifier.
+
+**Track hits and misses:**
+
+    /roll 10d6 hit5
+
+Rolls 10 6-sided dice and counts hits for results >= 5 and misses for those < 5. Results will also count how many hits are critical (the highest possible roll value) and how many misses are critical (the lowest possible roll value, 1).
