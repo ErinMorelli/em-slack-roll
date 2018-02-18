@@ -58,6 +58,8 @@ class RollParser(argparse.ArgumentParser):
             help_msg += "`{command} 4d10`\n\tRolls 4 10-sided dice\n\n"
             help_msg += "`{command} 1d6+3`\n\t"
             help_msg += "Rolls a single 6-sided die with a +3 modifier\n\n"
+            help_msg += "`{command} hits 10d6`\n\t"
+            help_msg += "Counts hits and glitches\n\n"
             help_msg += "`{command} help`\n\tShows this message\n"
 
             ERRORS.append(help_msg.format(
@@ -91,7 +93,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
         modifier_count = None
 
         # Parse the roll
-        result = re.match(r'(\d+)?d(\d+)(?:([-+])(\d+))?', dice_roll, re.I)
+        result = re.match(r'(hits)?\s?(\d+)?d(\d+)(?:([-+])(\d+))?', dice_roll, re.I)
 
         # Check that roll is valid
         if result is None:
@@ -106,8 +108,8 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
 
         else:
             # Get the number of dice
-            if result.group(1) is not None:
-                count = int(result.group(1))
+            if result.group(2) is not None:
+                count = int(result.group(2))
 
                 # Set 100 count max
                 if count > 100:
@@ -118,8 +120,8 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
                     count = 1
 
             # Get the number of sides
-            if result.group(2) is not None:
-                sides = int(result.group(2))
+            if result.group(3) is not None:
+                sides = int(result.group(3))
 
                 # Set 100 side max
                 if sides > 100:
@@ -130,9 +132,9 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
                     sides = 4
 
             # Get the modifiers
-            if result.group(3) is not None:
+            if result.group(4) is not None:
 
-                if result.group(4) is None:
+                if result.group(5) is None:
                     report_event('roll_modifier_invalid', {
                         'roll': dice_roll
                     })
@@ -142,10 +144,23 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
                         )
                     )
 
-                modifier = result.group(3)
-                modifier_count = int(result.group(4))
+                modifier = result.group(4)
+                modifier_count = int(result.group(5))
+
+            # Are we counting hits?
+            if result.group(1) is not None and result.group(1) == "hits":
+                if sides == 6:
+                    hits = true
+                else:
+                    report_event('roll_invalid', {
+                        'roll': dice_roll
+                        })
+                    parser.error("Can only count hits on d6, not d{0}".format(sides))
+            else:
+                hits = false
 
         # Set values
+        setattr(namespace, 'hits', hits)
         setattr(namespace, 'count', count)
         setattr(namespace, 'sides', sides)
         setattr(namespace, 'modifier', modifier)
@@ -208,12 +223,19 @@ def do_roll(roll, user):
     roll_sum = 0
     roll_result = []
     roll_modifier = ''
+    roll_hits = 0
+    roll_glitches = 0
 
     # Roll dice
     for _ in range(0, roll.count):
         die_roll = random.randint(1, roll.sides)
         roll_sum += die_roll
         roll_result.append(die_roll)
+        if roll.hits is true:
+            if die_roll == 5 or die_roll == 6:
+                roll_hits += 1
+            if die_roll == 1:
+                roll_glitches += 1
 
     # Deal with modifier
     if roll.modifier is not None:
@@ -239,10 +261,20 @@ def do_roll(roll, user):
         die=die_word
     )
 
+    # Report hits?
+    if roll.hits is true:
+        hits_response = '{hits} hits, {glitches} glitches '.format(
+                hits=roll_hits,
+                glitches=roll_glitches
+                )
+    else:
+        hits_response = ""
+
     # Return response with results
-    return '{response}  *{sum}*  ( {results} ){modifier}'.format(
+    return '{response}  *{sum}* {hits_response}( {results} ){modifier}'.format(
         response=response,
         sum=roll_sum,
+        hits_response=hits_response,
         results=formatted_result,
         modifier=roll_modifier
     )
