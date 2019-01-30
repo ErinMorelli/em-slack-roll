@@ -61,7 +61,10 @@ setup(
         'newrelic',
         'keen',
         'pkginfo',
-        'psycopg2',
-        'slacker'
+        'psycopg2-binary',
+        'pycryptodome>=3.4',
+        'requests<3.0,>=2.5',
+        'slacker',
+        'six~=1.10.0'
     ]
 )
