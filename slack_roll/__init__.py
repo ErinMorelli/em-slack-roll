@@ -19,8 +19,8 @@ import os
 from datetime import date
 from threading import Thread
 from pkg_resources import get_provider
-import keen
 from flask import Flask
+import keen
 
 
 # =============================================================================
@@ -46,8 +46,8 @@ def set_project_info():
         'name_full': 'EM Slack Roll',
         'author_url': 'http://www.erinmorelli.com',
         'github_url': 'https://github.com/ErinMorelli/em-slack-roll',
-        'version': '2.0',
-        'version_int': 2.0,
+        'version': '2.1',
+        'version_int': 2.1,
         'package_path': provider.module_path,
         'copyright': '2015-{0}'.format(str(date.today().year)),
         'client_secret': os.environ['SLACK_CLIENT_SECRET'],

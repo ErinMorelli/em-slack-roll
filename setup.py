@@ -37,7 +37,7 @@ def gen_data_files(*dirs):
 # Set up slack_roll package
 setup(
     name='em-slack-roll',
-    version='2.0',
+    version='2.1',
     author='Erin Morelli',
     author_email='erin@erinmorelli.com',
     url='http://slack-roll.herokuapp.com',
@@ -58,13 +58,12 @@ setup(
     install_requires=[
         'Flask',
         'Flask-SQLAlchemy',
-        'newrelic',
         'keen',
+        'itsdangerous',
+        'mysqlclient',
+        'newrelic',
         'pkginfo',
         'psycopg2-binary',
-        'pycryptodome>=3.4',
-        'requests<3.0,>=2.5',
-        'slacker',
-        'six~=1.10.0'
+        'slacker'
     ]
 )

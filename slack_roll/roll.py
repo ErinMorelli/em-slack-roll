@@ -20,6 +20,7 @@ import re
 import random
 import argparse
 from slacker import Auth, Chat, Error
+
 from slack_roll.storage import Teams
 from slack_roll import PROJECT_INFO, ALLOWED_COMMANDS, report_event
 
@@ -429,4 +430,4 @@ def make_roll(args):
         return err
 
     # Return successful
-    return ('', 204)
+    return '', 204

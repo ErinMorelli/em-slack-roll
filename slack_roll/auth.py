@@ -19,9 +19,10 @@ from datetime import timedelta
 from urllib.parse import urlencode
 from flask import abort
 from slacker import OAuth, Error
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+
 from slack_roll import PROJECT_INFO, report_event
 from slack_roll.storage import Teams, DB
-from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 
 # Create serializer
@@ -50,6 +51,8 @@ def get_redirect():
 
 def validate_state(state):
     """Validate state token returned by authentication."""
+    state_token = None
+
     try:
         # Attempt to decode state
         state_token = GENERATOR.loads(
@@ -71,7 +74,7 @@ def validate_state(state):
         })
         abort(401)
 
-    if state_token != PROJECT_INFO['client_id']:
+    if not state_token or state_token != PROJECT_INFO['client_id']:
         # Token is not authorized
         report_event('token_not_valid', {
             'state': state,
@@ -79,14 +82,12 @@ def validate_state(state):
         })
         abort(401)
 
-    # Return success
-    return
-
 
 def get_token(code):
     """Request a token from the Slack API."""
     # Set OAuth access object
     oauth = OAuth()
+    result = None
 
     try:
         # Attempt to make request
@@ -104,7 +105,7 @@ def get_token(code):
         })
         abort(400)
 
-    if not result.successful:
+    if not result or not result.successful:
         report_event('oauth_unsuccessful', {
             'code': code,
             'result': result.__dict__

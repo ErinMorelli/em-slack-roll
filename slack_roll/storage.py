@@ -17,9 +17,10 @@ included in all copies or substantial portions of the Software.
 """
 
 from datetime import datetime
-from slack_roll import APP
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
+
+from slack_roll import APP
 
 
 # Create database

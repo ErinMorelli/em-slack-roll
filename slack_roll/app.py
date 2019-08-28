@@ -16,6 +16,7 @@ included in all copies or substantial portions of the Software.
 """
 
 from flask import redirect, render_template, request
+
 import slack_roll.auth as auth
 import slack_roll.roll as roll
 from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
