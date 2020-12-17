@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-Copyright (c) 2015-2019 Erin Morelli.
+Copyright (c) 2015-2020 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@ def get_redirect():
     })
 
     # Set full location
-    location = "{0}?{1}".format(PROJECT_INFO['oauth_url'], params)
+    location = f"{PROJECT_INFO['oauth_url']}?{ params}"
 
     # Return URL for redirect
     return location
@@ -170,7 +170,7 @@ def validate_return(args):
     store_data(token_info)
 
     # Set success url
-    redirect_url = '{0}?success=1'.format(PROJECT_INFO['base_url'])
+    redirect_url = f"{PROJECT_INFO['base_url']}?success=1"
 
     # Return successful
     return redirect_url

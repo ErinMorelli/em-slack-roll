@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=global-variable-not-assigned,global-statement
 """
-Copyright (c) 2015-2019 Erin Morelli.
+Copyright (c) 2015-2020 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ COMMAND = None
 AUTH_MSG = "{0} is not authorized to post in this team: {1}"
 AUTH_ERROR = AUTH_MSG.format(
     PROJECT_INFO['name_full'],
-    '*<{0}|Click here to authorize>*'.format(PROJECT_INFO['base_url'])
+    f'*<{PROJECT_INFO["base_url"]}|Click here to authorize>*'
 )
 
 
@@ -69,10 +69,8 @@ class RollParser(argparse.ArgumentParser):
             ))
 
         elif dice_roll == 'version':
-            ERRORS.append('{app_name} v{version}'.format(
-                app_name=PROJECT_INFO['name_full'],
-                version=PROJECT_INFO['version']
-            ))
+            ERRORS.append(
+                f"{PROJECT_INFO['name_full']} v{PROJECT_INFO['version']}")
 
 
 class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
@@ -108,9 +106,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
             report_event('roll_invalid', {
                 'roll': dice_roll
             })
-            parser.error(
-                "'{0}' is not a valid roll format".format(dice_roll)
-            )
+            parser.error(f"'{dice_roll}' is not a valid roll format")
 
         else:
             # Get the number of dice
@@ -145,9 +141,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
                     report_event('roll_modifier_invalid', {
                         'roll': dice_roll
                     })
-                    parser.error(
-                        "'{0}' is not a valid roll format".format(dice_roll)
-                    )
+                    parser.error(f"'{dice_roll}' is not a valid roll format")
 
                 # Set modifier data
                 modifier = result.group('mod')
@@ -175,9 +169,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
                     report_event('roll_hit_invalid', {
                         'roll': dice_roll
                     })
-                    parser.error(
-                        "Hit threshold '{0}' is too big".format(hit)
-                    )
+                    parser.error(f"Hit threshold '{hit}' is too big")
 
         # Set values
         setattr(namespace, 'count', count)
@@ -276,7 +268,7 @@ def do_roll(roll, user):
 
     # Deal with modifier
     if roll.modifier is not None:
-        roll_modifier = '  {0} {1}'.format(roll.modifier, roll.modifier_count)
+        roll_modifier = f'  {roll.modifier} {roll.modifier_count}'
 
         if roll.modifier == '-':
             roll_sum -= roll.modifier_count
@@ -285,18 +277,13 @@ def do_roll(roll, user):
             roll_sum += roll.modifier_count
 
     # Format message
-    formatted_result = ',  '.join(str(result) for result in roll_result)
+    formatted= ',  '.join(str(result) for result in roll_result)
 
     # Set singular/plural word
     die_word = 'die' if roll.count == 1 else 'dice'
 
     # Set response
-    response = '_{user} rolled {count} {sides}-sided {die}:_'.format(
-        user=user,
-        count=roll.count,
-        sides=roll.sides,
-        die=die_word
-    )
+    response = f'_{user} rolled {roll.count} {roll.sides}-sided {die_word}:_'
 
     # Default to no hit results
     hits = ''
@@ -308,30 +295,21 @@ def do_roll(roll, user):
 
         # Check if we have any critical hits
         if roll_hits_crit > 0:
-            hit_crit = ' ({0} critical)'.format(roll_hits_crit)
+            hit_crit = f' ({roll_hits_crit} critical)'
 
         # Check if we had any critical misses
         if roll_misses_crit > 0:
-            miss_crit = ' ({0} critical)'.format(roll_misses_crit)
+            miss_crit = f' ({roll_misses_crit} critical)'
 
         # Format the results
-        hits = '  with {hit} hit{h}{hcrit} and {miss} miss{m}{mcrit}'.format(
-            hit=roll_hits,
-            h='' if roll_hits == 1 else 's',
-            hcrit=hit_crit,
-            miss=roll_misses,
-            m='' if roll_misses == 1 else 'es',
-            mcrit=miss_crit
-        )
+        hit_plural = '' if roll_hits == 1 else 's'
+        miss_plural = '' if roll_misses == 1 else 'es'
+
+        hits = f'  with {roll_hits} hit{hit_plural}{hit_crit} and' \
+               f' {roll_misses} miss{miss_plural}{miss_crit}'
 
     # Return response with results
-    return '{response}  *{sum}*  ( {results} ){modifier}{hits}'.format(
-        response=response,
-        sum=roll_sum,
-        results=formatted_result,
-        modifier=roll_modifier,
-        hits=hits
-    )
+    return f'{response}  *{roll_sum}*  ( {formatted} ){roll_modifier}{hits}'
 
 
 def send_roll(team, roll, args):
@@ -357,17 +335,13 @@ def send_roll(team, roll, args):
 
         # Check specifically for channel errors
         if str(err) == 'channel_not_found':
-            err_msg = "{0} is not authorized to post in this channel.".format(
-                'The {0} bot'.format(PROJECT_INFO['name_full'])
-            )
+            err_msg = f'The {PROJECT_INFO["name_full"]} bot is not ' \
+                      f'authorized to post in this channel.'
             err_msg += ' Please invite it to join this channel and try again.'
             return err_msg
 
         # Report any other errors
-        return '{0} encountered an error: {1}'.format(
-            PROJECT_INFO['name_full'],
-            str(err)
-        )
+        return f"{PROJECT_INFO['name_full']} encountered an error: {str(err)}"
 
     # Return no errors
     return None
@@ -382,7 +356,7 @@ def make_roll(args):
     # Make sure this is a valid slash command
     if args['command'] not in ALLOWED_COMMANDS:
         report_event('command_not_allowed', args)
-        return '"{0}" is not an allowed command'.format(args['command'])
+        return f'"{args["command"]}" is not an allowed command'
 
     # Set global command value to access later
     global COMMAND

@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name
 """
-Copyright (c) 2015-2019 Erin Morelli.
+Copyright (c) 2015-2020 Erin Morelli.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -47,10 +47,7 @@ class Teams(DB.Model):  # pylint: disable=too-few-public-methods
 
     def __repr__(self):
         """Friendly representation of Team for debugging."""
-        return '<Team id={team} bot_id={bot}>'.format(
-            team=self.id,
-            bot=self.bot_id
-        )
+        return f'<Team id={self.id} bot_id={self.bot_id}>'
 
 
 try:
