@@ -3,6 +3,8 @@ Roll some dice on [Slack](https://slack.com).
 
 [Click here](http://slack-roll.herokuapp.com) to setup EM Slack Roll for your team.
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ErinMorelli_em-slack-roll&metric=alert_status)](https://sonarcloud.io/dashboard?id=ErinMorelli_em-slack-roll)
+
 ----------
 ## Usage
 
