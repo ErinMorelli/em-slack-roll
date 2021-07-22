@@ -18,60 +18,46 @@ included in all copies or substantial portions of the Software.
 import os
 from datetime import date
 from threading import Thread
-from pkg_resources import get_provider
-from flask import Flask
+
 import keen
+from flask import Flask
+from pkg_resources import get_provider
 
 
-# =============================================================================
-#  App Constants
-# =============================================================================
+# Common project metadata
+__version__ = open('VERSION').read()
+__app_name__ = 'EM Slack Roll'
+__copyright__ = f'2015-{str(date.today().year)}'
 
-# Set module name
-__module__ = "slack_roll.{0}".format(__file__)
-
-
-# Get module info
-def set_project_info():
-    """Set project information from setup tools installation."""
-    # CUSTOMIZE THIS VALUE FOR YOUR OWN INSTALLATION
-    base_url = os.environ['BASE_URL']
-
-    # Get app info from the dist
-    app_name = 'slack_roll'
-    provider = get_provider(app_name)
-
-    return {
-        'name': app_name,
-        'name_full': 'EM Slack Roll',
-        'author_url': 'http://www.erinmorelli.com',
-        'github_url': 'https://github.com/ErinMorelli/em-slack-roll',
-        'version': '2.1',
-        'version_int': 2.1,
-        'package_path': provider.module_path,
-        'copyright': f'2015-{str(date.today().year)}',
-        'client_secret': os.environ['SLACK_CLIENT_SECRET'],
-        'client_id': os.environ['SLACK_CLIENT_ID'],
-        'base_url': base_url,
-        'oauth_url': os.environ['OAUTH_URL'],
-        'auth_url': f'{base_url}/authenticate',
-        'valid_url': f'{base_url}/validate',
-        'team_url': f'{base_url}/authorize',
-        'team_scope': [
-            'commands',
-            'bot'
-        ]
-    }
+# Project URLs
+base_url = os.environ.get('BASE_URL')
+github_url = os.environ.get('GITHUB_URL')
 
 
 # Project info
-PROJECT_INFO = set_project_info()
+project_info = {
+    'name': __app_name__,
+    'version': __version__,
+    'copyright': __copyright__,
+    'base_url': base_url,
+    'github_url': github_url,
+    'client_secret': os.environ.get('SLACK_CLIENT_SECRET'),
+    'client_id': os.environ.get('SLACK_CLIENT_ID'),
+    'oauth_url': os.environ.get('OAUTH_URL'),
+    'auth_url': f'{base_url}/authenticate',
+    'valid_url': f'{base_url}/validate',
+    'team_url': f'{base_url}/authorize',
+    'team_scope': [
+        'commands',
+        'bot'
+    ]
+}
 
 # Set the template directory
-TEMPLATE_DIR = os.path.join(PROJECT_INFO['package_path'], 'templates')
+template_dir = os.path.join(get_provider(__name__).module_path, 'templates')
 
 # Allowed slash commands
-ALLOWED_COMMANDS = [
+allowed_commands = [
     '/roll',
     '/rolldice',
     '/diceroll',
@@ -79,10 +65,23 @@ ALLOWED_COMMANDS = [
     '/dice_roll'
 ]
 
+# Initialize flask app
+app = Flask(
+    'em-slack-roll',
+    template_folder=template_dir,
+    static_folder=template_dir
+)
+
+# Set up flask config
+app.config.update({
+    'SECRET_KEY': os.environ.get('SECURE_KEY'),
+    'SQLALCHEMY_DATABASE_URI': os.environ.get('DATABASE_URL'),
+    'SQLALCHEMY_TRACK_MODIFICATIONS': True
+})
+
 
 def report_event(name, event):
     """Asynchronously report an event."""
-    # Set up thread
     event_report = Thread(
         target=keen.add_event,
         args=(name, event)
@@ -93,23 +92,3 @@ def report_event(name, event):
 
     # Start event report
     event_report.start()
-
-
-# =============================================================================
-# Flask App Configuration
-# =============================================================================
-
-# Initialize flask app
-APP = Flask(
-    'em-slack-roll',
-    template_folder=TEMPLATE_DIR,
-    static_folder=TEMPLATE_DIR
-)
-
-# Set up flask config
-# SET THESE ENV VALUES FOR YOUR OWN INSTALLATION
-APP.config.update({
-    'SECRET_KEY': os.environ['SECURE_KEY'],
-    'SQLALCHEMY_DATABASE_URI': os.environ['DATABASE_URL'],
-    'SQLALCHEMY_TRACK_MODIFICATIONS': True
-})

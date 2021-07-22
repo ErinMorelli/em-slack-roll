@@ -17,33 +17,33 @@ included in all copies or substantial portions of the Software.
 
 from datetime import timedelta
 from urllib.parse import urlencode
+
 from flask import abort
 from slacker import OAuth, Error
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
-from slack_roll import PROJECT_INFO, report_event
-from slack_roll.storage import Teams, DB
+from slack_roll import project_info, report_event
+from slack_roll.storage import Team, db
 
 
 # Create serializer
-GENERATOR = URLSafeTimedSerializer(PROJECT_INFO['client_secret'])
+generator = URLSafeTimedSerializer(project_info['client_secret'])
 
 
 def get_redirect():
     """Generate Slack authentication URL."""
-    # Generate state token
-    state_token = GENERATOR.dumps(PROJECT_INFO['client_id'])
+    state_token = generator.dumps(project_info['client_id'])
 
     # URL encode params
     params = urlencode({
-        'client_id': PROJECT_INFO['client_id'],
-        'redirect_uri': PROJECT_INFO['valid_url'],
-        'scope': ' '.join(PROJECT_INFO['team_scope']),
+        'client_id': project_info['client_id'],
+        'redirect_uri': project_info['valid_url'],
+        'scope': ' '.join(project_info['team_scope']),
         'state': state_token
     })
 
     # Set full location
-    location = f"{PROJECT_INFO['oauth_url']}?{ params}"
+    location = f"{project_info['oauth_url']}?{ params}"
 
     # Return URL for redirect
     return location
@@ -55,26 +55,22 @@ def validate_state(state):
 
     try:
         # Attempt to decode state
-        state_token = GENERATOR.loads(
+        state_token = generator.loads(
             state,
-            max_age=timedelta(minutes=60).total_seconds()
+            max_age=int(timedelta(minutes=60).total_seconds())
         )
 
     except SignatureExpired:
         # Token has expired
-        report_event('token_expired', {
-            'state': state
-        })
+        report_event('token_expired', {'state': state})
         abort(400)
 
     except BadSignature:
         # Token is not authorized
-        report_event('token_not_authorized', {
-            'state': state
-        })
+        report_event('token_not_authorized', {'state': state})
         abort(401)
 
-    if not state_token or state_token != PROJECT_INFO['client_id']:
+    if not state_token or state_token != project_info['client_id']:
         # Token is not authorized
         report_event('token_not_valid', {
             'state': state,
@@ -85,19 +81,17 @@ def validate_state(state):
 
 def get_token(code):
     """Request a token from the Slack API."""
-    # Set OAuth access object
     oauth = OAuth()
     result = None
 
     try:
         # Attempt to make request
         result = oauth.access(
-            client_id=PROJECT_INFO['client_id'],
-            client_secret=PROJECT_INFO['client_secret'],
-            redirect_uri=PROJECT_INFO['valid_url'],
+            client_id=project_info['client_id'],
+            client_secret=project_info['client_secret'],
+            redirect_uri=project_info['valid_url'],
             code=code
         )
-
     except Error as err:
         report_event('oauth_error', {
             'code': code,
@@ -126,12 +120,11 @@ def get_token(code):
 
 def store_data(info):
     """Store validated data in the database."""
-    # Check if user exists
-    team = Teams.query.get(info['team_id'])
+    team = Team.query.get(info['team_id'])
 
     if team is None:
         # Create new team
-        new_team = Teams(
+        new_team = Team(
             team_id=info['team_id'],
             token=info['token'],
             bot_id=info['bot_id'],
@@ -139,23 +132,28 @@ def store_data(info):
         )
 
         # Store new user
-        report_event('team_added', info)
-        DB.session.add(new_team)
+        report_event('team_added', {
+            'team_id': info['team_id'],
+            'bot_id': info['bot_id']
+        })
+        db.session.add(new_team)
 
     else:
         # Update team info
-        team.token = info['token']
         team.bot_id = info['bot_id']
-        team.bot_token = info['bot_token']
-        report_event('team_updated', info)
+        team.set_token(info['token'])
+        team.set_bot_token(info['bot_token'])
+        report_event('team_updated', {
+            'team_id': info['team_id'],
+            'bot_id': info['bot_id']
+        })
 
     # Update DB
-    DB.session.commit()
+    db.session.commit()
 
 
 def validate_return(args):
     """Run data validation functions."""
-    # Make sure we have args
     if not args['state'] or not args['code']:
         report_event('missing_args', args)
         abort(400)
@@ -169,8 +167,5 @@ def validate_return(args):
     # Set up storage methods
     store_data(token_info)
 
-    # Set success url
-    redirect_url = f"{PROJECT_INFO['base_url']}?success=1"
-
     # Return successful
-    return redirect_url
+    return f"{project_info['base_url']}?success=1"

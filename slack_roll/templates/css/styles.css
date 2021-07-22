@@ -116,10 +116,10 @@ header ul {
   background: #eee;
   background: -moz-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
-  background: -webkit-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
-  background: -o-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
-  background: -ms-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
-  background: linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+  background: -webkit-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+  background: -o-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+  background: -ms-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+  background: linear-gradient(to bottom, #f8f8f8 0%, #dddddd 100%);
 
   border-radius:5px;
   border:1px solid #d2d2d2;
@@ -156,10 +156,10 @@ header ul a:hover {
   color:#999;
   background: -moz-linear-gradient(top, #fff 0%, #ddd 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fff), color-stop(100%,#ddd));
-  background: -webkit-linear-gradient(top, #fff 0%,#ddd 100%);
-  background: -o-linear-gradient(top, #fff 0%,#ddd 100%);
-  background: -ms-linear-gradient(top, #fff 0%,#ddd 100%);
-  background: linear-gradient(top, #fff 0%,#ddd 100%);
+  background: -webkit-linear-gradient(top, #fff 0%, #ddd 100%);
+  background: -o-linear-gradient(top, #fff 0%, #ddd 100%);
+  background: -ms-linear-gradient(top, #fff 0%, #ddd 100%);
+  background: linear-gradient(to bottom, #fff 0%, #ddd 100%);
 }
 
 header ul a:active {
@@ -262,9 +262,6 @@ div.alert > p > .close:hover {
 	cursor: pointer;
 	filter: alpha(opacity=50);
 	opacity: .5;
-}
-
-form {
 }
 
 form > p:first-child {
