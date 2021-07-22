@@ -15,47 +15,23 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
-import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
-def gen_data_files(*dirs):
-    """Generate list of files for package data installation."""
-    results = []
-
-    for src_dir in dirs:
-        src_dir = os.path.join('slack_roll', src_dir)
-        for root, dirs, files in os.walk(src_dir):
-            top = root.split(os.sep)
-            top.pop(0)
-            root = (os.sep).join(top)
-            for item in files:
-                results.append(os.path.join(root, item))
-    return results
-
-
-# Set up slack_roll package
 setup(
     name='em-slack-roll',
-    version='2.1',
+    version=open('VERSION').read(),
     author='Erin Morelli',
-    author_email='erin@erinmorelli.com',
-    url='http://slack-roll.herokuapp.com',
+    author_email='me@erin.dev',
+    url='https://slack-roll.herokuapp.com',
     license='MIT',
     platforms='Linux, OSX',
     description='Roll some dice on Slack.',
     long_description=open('README.md').read(),
-
-    packages=[
-        'slack_roll',
-        'slack_roll.templates'
-    ],
-
-    package_data={
-        'slack_roll': gen_data_files('templates')
-    },
-
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=[
+        'cryptography',
         'Flask',
         'Flask-SQLAlchemy',
         'keen',

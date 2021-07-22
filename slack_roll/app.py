@@ -17,12 +17,10 @@ included in all copies or substantial portions of the Software.
 
 from flask import redirect, render_template, request
 
-import slack_roll.auth as auth
-import slack_roll.roll as roll
-from slack_roll import APP, PROJECT_INFO, ALLOWED_COMMANDS, report_event
+from . import app, project_info, allowed_commands, report_event, auth, roll
 
 
-@APP.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     """Render app homepage template."""
     if request.method == 'POST':
@@ -31,18 +29,18 @@ def home():
 
     return render_template(
         'index.html',
-        project=PROJECT_INFO,
-        allowed_commands=ALLOWED_COMMANDS
+        project=project_info,
+        allowed_commands=allowed_commands
     )
 
 
-@APP.route('/authenticate')
+@app.route('/authenticate')
 def authenticate():
     """Redirect to generated Slack authentication url."""
     return redirect(auth.get_redirect())
 
 
-@APP.route('/validate')
+@app.route('/validate')
 def validate():
     """Validate the returned values from authentication."""
     return redirect(auth.validate_return(request.args.to_dict()))

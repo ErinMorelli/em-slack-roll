@@ -16,34 +16,59 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
+import os
 from datetime import datetime
+
+from cryptography.fernet import Fernet
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 
-from slack_roll import APP
+from . import app
 
 
 # Create database
-DB = SQLAlchemy(APP)
+db = SQLAlchemy(app)
 
 
-class Teams(DB.Model):  # pylint: disable=too-few-public-methods
+class Team(db.Model):
     """Table for storing api tokens."""
-
     __tablename__ = 'roll_teams'
+    __cipher = Fernet(os.environ.get('TOKEN_KEY', '').encode('utf8'))
 
-    id = DB.Column(DB.String(16), primary_key=True)
-    token = DB.Column(DB.String(255))
-    bot_id = DB.Column(DB.String(16))
-    bot_token = DB.Column(DB.String(255))
-    added = DB.Column(DB.DateTime, default=datetime.now)
+    id = db.Column(db.String(16), primary_key=True)
+    token = db.Column(db.String(255))
+    bot_id = db.Column(db.String(16))
+    bot_token = db.Column(db.String(255))
+    added = db.Column(db.DateTime, default=datetime.now)
+    encrypted_token = db.Column(db.BLOB)
+    encrypted_bot_token = db.Column(db.BLOB)
 
     def __init__(self, team_id, token, bot_id, bot_token):
         """Initialize new Team in db."""
         self.id = team_id
-        self.token = token
         self.bot_id = bot_id
-        self.bot_token = bot_token
+        self.set_token(token)
+        self.set_bot_token(bot_token)
+
+    def set_token(self, token):
+        """Encrypt and set token value ."""
+        if not isinstance(token, bytes):
+            token = token.encode('utf-8')
+        self.encrypted_token = self.__cipher.encrypt(token)
+
+    def get_token(self):
+        """Retrieve decrypted token."""
+        return self.__cipher.decrypt(self.encrypted_token).decode('utf-8')
+
+    def set_bot_token(self, bot_token):
+        """Encrypt and set bot token value ."""
+        if not isinstance(bot_token, bytes):
+            bot_token = bot_token.encode('utf-8')
+        self.encrypted_bot_token = self.__cipher.encrypt(bot_token)
+
+    def get_bot_token(self):
+        """Retrieve decrypted bot token."""
+        return self.__cipher.decrypt(self.encrypted_bot_token).decode('utf-8')
 
     def __repr__(self):
         """Friendly representation of Team for debugging."""
@@ -52,8 +77,7 @@ class Teams(DB.Model):  # pylint: disable=too-few-public-methods
 
 try:
     # Attempt to initialize database
-    DB.create_all()
-
+    db.create_all()
 except SQLAlchemyError:
     # Other wise, refresh the session
-    DB.session.rollback()
+    db.session.rollback()
