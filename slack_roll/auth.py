@@ -43,7 +43,7 @@ def get_redirect():
     })
 
     # Set full location
-    location = f"{project_info['oauth_url']}?{ params}"
+    location = f"{project_info['oauth_url']}?{params}"
 
     # Return URL for redirect
     return location
