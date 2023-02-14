@@ -75,7 +75,8 @@ class Team(db.Model):
 
 try:
     # Attempt to initialize database
-    db.create_all()
+    with app.app_context():
+        db.create_all()
 except SQLAlchemyError:
-    # Other wise, refresh the session
+    # Otherwise, refresh the session
     db.session.rollback()
