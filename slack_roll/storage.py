@@ -46,27 +46,26 @@ class Team(db.Model):
         self.id = team_id
         self.bot_id = bot_id
         self.set_token(token)
-        self.set_bot_token(bot_token)
+        self.set_token(bot_token, True)
 
-    def set_token(self, token):
+    @staticmethod
+    def __token_column(is_bot=False):
+        token_name = 'bot_token' if is_bot else 'token'
+        return f'encrypted_{token_name}'
+
+    def set_token(self, token, is_bot=False):
         """Encrypt and set token value ."""
         if not isinstance(token, bytes):
             token = token.encode('utf-8')
-        self.encrypted_token = self.__cipher.encrypt(token)
+        setattr(self,
+                self.__token_column(is_bot),
+                self.__cipher.encrypt(token))
 
-    def get_token(self):
+    def get_token(self, is_bot=False):
         """Retrieve decrypted token."""
-        return self.__cipher.decrypt(self.encrypted_token).decode('utf-8')
-
-    def set_bot_token(self, bot_token):
-        """Encrypt and set bot token value ."""
-        if not isinstance(bot_token, bytes):
-            bot_token = bot_token.encode('utf-8')
-        self.encrypted_bot_token = self.__cipher.encrypt(bot_token)
-
-    def get_bot_token(self):
-        """Retrieve decrypted bot token."""
-        return self.__cipher.decrypt(self.encrypted_bot_token).decode('utf-8')
+        return self.__cipher\
+            .decrypt(getattr(self, self.__token_column(is_bot)))\
+            .decode('utf-8')
 
     def __repr__(self):
         """Friendly representation of Team for debugging."""
