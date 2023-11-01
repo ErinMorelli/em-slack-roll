@@ -325,7 +325,7 @@ def do_roll(roll, user):
 
 def send_roll(team, roll, args):
     """Post the roll to Slack."""
-    chat = Chat(team.get_bot_token())
+    chat = Chat(team.get_token(True))
 
     try:
         # Attempt to post message
@@ -378,7 +378,7 @@ def make_roll(args):
     if (
             not team or
             not is_valid_token(team.get_token()) or
-            not is_valid_token(team.get_bot_token())
+            not is_valid_token(team.get_token(True))
     ):
         report_event('auth_error', {'args': args, 'team': team.__dict__})
         return auth_error
