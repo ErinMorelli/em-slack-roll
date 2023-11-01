@@ -1,1 +1,1 @@
-web: python diceroll.py
+web: gunicorn slack_roll.app:app
