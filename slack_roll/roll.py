@@ -284,10 +284,14 @@ def roll_die(roll, roll_data):
         # Add 1 for each regular hit/miss, 2 for critical
         if die_roll >= roll.hit:
             # Hits
-            roll_data['hits'] += 2 if die_roll == roll.sides else 1
+            if die_roll == roll.sides:
+                roll_data['hits_crit'] += 1
+            roll_data['hits'] += 1
         else:
             # Misses
-            roll_data['misses'] += 2 if die_roll == 1 else 1
+            if die_roll == 1:
+                roll_data['misses_crit'] += 1
+            roll_data['misses'] += 1
 
     # Return updated roll data
     return roll_data
