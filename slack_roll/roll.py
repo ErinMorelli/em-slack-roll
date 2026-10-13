@@ -19,9 +19,10 @@ included in all copies or substantial portions of the Software.
 import re
 import random
 import argparse
-from slacker import Auth, Chat, Error
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
-from slack_roll.storage import Team
+from slack_roll.storage import Team, db
 from slack_roll import project_info, allowed_commands, report_event
 
 
@@ -171,6 +172,7 @@ class RollAction(argparse.Action):  # pylint: disable=too-few-public-methods
         if not result:
             report_event('roll_invalid', {'roll': dice_roll})
             parser.error(f"'{dice_roll}' is not a valid roll format")
+            return
 
         # Get the number of dice
         count = self._get_dice(result)
@@ -210,25 +212,20 @@ def get_parser():
 
 def get_team(args):
     """Return authenticated team token data."""
-    return Team.query.get(args['team_id'])
+    return db.session.get(Team, args['team_id'])
 
 
 def is_valid_token(token):
     """Check that the team has a valid token."""
-    auth = Auth(token)
+    client = WebClient(token=token)
 
     try:
         # Make request
-        result = auth.test()
+        client.auth_test()
 
-    except Error as err:
+    except SlackApiError as err:
         # Check for auth errors
-        report_event(str(err), {})
-        return False
-
-    # Check for further errors
-    if not result.successful:
-        report_event('token_invalid', {'result': result.__dict__})
+        report_event(err.response['error'], {})
         return False
 
     # Return successful
@@ -329,33 +326,34 @@ def do_roll(roll, user):
 
 def send_roll(team, roll, args):
     """Post the roll to Slack."""
-    chat = Chat(team.get_token(True))
+    client = WebClient(token=team.get_token(True))
 
     try:
         # Attempt to post message
-        chat.post_message(
-            args['channel_id'],
-            roll,
+        client.chat_postMessage(
+            channel=args['channel_id'],
+            text=roll,
             username='Roll Bot',
             icon_emoji=':game_die:'
         )
 
-    except Error as err:
-        report_event(str(err), {
-            'team': team.__dict__,
+    except SlackApiError as err:
+        error = err.response['error']
+        report_event(error, {
+            'team_id': team.id,
             'roll': roll,
             'args': args
         })
 
         # Check specifically for channel errors
-        if str(err) == 'channel_not_found':
+        if error in ('channel_not_found', 'not_in_channel'):
             err_msg = f'The {project_info["name"]} bot is not ' \
                       f'authorized to post in this channel. ' \
                       f'Please invite it to join this channel and try again.'
             return err_msg
 
         # Report any other errors
-        return f"{project_info['name']} encountered an error: {str(err)}"
+        return f"{project_info['name']} encountered an error: {error}"
 
     # Return no errors
     return None
@@ -378,13 +376,9 @@ def make_roll(args):
     # Check to see if team has authenticated with the app
     team = get_team(args)
 
-    # If the user, team token, and bot token are not valid, let them know
-    if (
-            not team or
-            not is_valid_token(team.get_token()) or
-            not is_valid_token(team.get_token(True))
-    ):
-        report_event('auth_error', {'args': args, 'team': team.__dict__})
+    # If the team or bot token are not valid, let them know
+    if not team or not is_valid_token(team.get_token(True)):
+        report_event('auth_error', {'args': args})
         return auth_error
 
     # If there's no input, use the default roll

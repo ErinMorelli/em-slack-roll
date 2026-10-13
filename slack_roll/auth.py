@@ -19,7 +19,8 @@ from datetime import timedelta
 from urllib.parse import urlencode
 
 from flask import abort
-from slacker import OAuth, Error
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from slack_roll import project_info, report_event
@@ -81,37 +82,29 @@ def validate_state(state):
 
 def get_token(code):
     """Request a token from the Slack API."""
-    oauth = OAuth()
-    result = None
+    client = WebClient()
 
     try:
         # Attempt to make request
-        result = oauth.access(
+        result = client.oauth_v2_access(
             client_id=project_info['client_id'],
             client_secret=project_info['client_secret'],
             redirect_uri=project_info['valid_url'],
             code=code
         )
-    except Error as err:
+    except SlackApiError as err:
         report_event('oauth_error', {
             'code': code,
-            'error': str(err)
+            'error': err.response['error']
         })
         abort(400)
 
-    if not result or not result.successful:
-        report_event('oauth_unsuccessful', {
-            'code': code,
-            'result': result.__dict__
-        })
-        abort(400)
-
-    # Setup return info
+    # Setup return info (no user scopes are requested, so no user token)
     info = {
-        'token': result.body['access_token'],
-        'team_id': result.body['team_id'],
-        'bot_id': result.body['bot']['bot_user_id'],
-        'bot_token': result.body['bot']['bot_access_token']
+        'token': None,
+        'team_id': result['team']['id'],
+        'bot_id': result['bot_user_id'],
+        'bot_token': result['access_token']
     }
 
     # Return info
@@ -120,7 +113,7 @@ def get_token(code):
 
 def store_data(info):
     """Store validated data in the database."""
-    team = Team.query.get(info['team_id'])
+    team = db.session.get(Team, info['team_id'])
 
     if team is None:
         # Create new team
@@ -142,7 +135,7 @@ def store_data(info):
         # Update team info
         team.bot_id = info['bot_id']
         team.set_token(info['token'])
-        team.set_bot_token(info['bot_token'])
+        team.set_token(info['bot_token'], True)
         report_event('team_updated', {
             'team_id': info['team_id'],
             'bot_id': info['bot_id']
@@ -154,7 +147,7 @@ def store_data(info):
 
 def validate_return(args):
     """Run data validation functions."""
-    if not args['state'] or not args['code']:
+    if not args.get('state') or not args.get('code'):
         report_event('missing_args', args)
         abort(400)
 

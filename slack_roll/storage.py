@@ -55,6 +55,10 @@ class Team(db.Model):
 
     def set_token(self, token, is_bot=False):
         """Encrypt and set token value ."""
+        if token is None:
+            setattr(self, self.__token_column(is_bot), None)
+            return
+
         if not isinstance(token, bytes):
             token = token.encode('utf-8')
         setattr(self,
@@ -63,9 +67,12 @@ class Team(db.Model):
 
     def get_token(self, is_bot=False):
         """Retrieve decrypted token."""
-        return self.__cipher\
-            .decrypt(getattr(self, self.__token_column(is_bot)))\
-            .decode('utf-8')
+        encrypted = getattr(self, self.__token_column(is_bot))
+
+        if encrypted is None:
+            return None
+
+        return self.__cipher.decrypt(encrypted).decode('utf-8')
 
     def __repr__(self):
         """Friendly representation of Team for debugging."""

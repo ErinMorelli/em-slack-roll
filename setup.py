@@ -15,12 +15,12 @@ The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Software.
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 
 setup(
     name='em-slack-roll',
-    version=open('VERSION').read(),
+    version=open('VERSION').read().strip(),
     author='Erin Morelli',
     author_email='me@erin.dev',
     url='https://slack-roll.herokuapp.com',
@@ -28,7 +28,7 @@ setup(
     platforms='Linux, OSX',
     description='Roll some dice on Slack.',
     long_description=open('README.md').read(),
-    packages=find_packages(),
+    packages=find_namespace_packages(include=['slack_roll*']),
     include_package_data=True,
     install_requires=[
         'cryptography',
@@ -41,6 +41,6 @@ setup(
         'newrelic',
         'pkginfo',
         'psycopg2-binary',
-        'slacker'
+        'slack_sdk'
     ]
 )
